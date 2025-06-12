@@ -1,6 +1,10 @@
-import os  # OS operations
-import boto3  # AWS SDK for Python
-from datetime import datetime  # For date operations
+import os  # OS操作用
+
+import boto3  # AWS SDK for Python（AWS用SDK）
+
+
+from datetime import datetime  # 日付操作用
+
 
 def list_csv_files(bucket, prefix, date_str):
     """

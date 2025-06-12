@@ -1,6 +1,11 @@
-import os  # OS operations
-import boto3  # AWS SDK for Python
-import zipfile  # For creating zip archives
+import os  # OS操作用
+
+import boto3  # AWS SDK for Python（AWS用SDK）
+
+
+import zipfile  # ZIPアーカイブ作成用
+
+
 
 def zip_csv_files(csv_dir, zip_path):
     """

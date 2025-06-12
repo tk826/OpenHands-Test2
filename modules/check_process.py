@@ -1,7 +1,10 @@
-import pandas as pd  # Data manipulation library
-import numpy as np  # Numerical operations
-from datetime import datetime  # For date parsing
-import os  # OS operations
+import pandas as pd  # データ操作用ライブラリ
+import numpy as np  # 数値計算用
+from datetime import datetime  # 日付解析用
+import os  # OS操作用
+
+
+
 
 def load_column_types(columns_file):
     """
@@ -30,9 +33,9 @@ def check_values(df, column_types):
     warnings = []
     for col, typ in column_types.items():
         if col not in df.columns:
-            continue  # Skip columns not present
+            continue  # 存在しないカラムはスキップ
         if typ == 'datetime':
-            # Check datetime format
+            # 日付フォーマットをチェック
             for i, v in df[col].items():
                 try:
                     if pd.isnull(v) or v == '':
@@ -42,7 +45,7 @@ def check_values(df, column_types):
                     warnings.append(f"Invalid datetime in {col} at row {i}: {v}")
                     df.at[i, col] = ''
         elif typ == 'float':
-            # Check float values
+            # float値をチェック
             for i, v in df[col].items():
                 try:
                     if pd.isnull(v) or v == '':
@@ -52,7 +55,7 @@ def check_values(df, column_types):
                     warnings.append(f"Invalid float in {col} at row {i}: {v}")
                     df.at[i, col] = ''
         elif typ == 'int':
-            # Check integer values
+            # int値をチェック
             for i, v in df[col].items():
                 try:
                     if pd.isnull(v) or v == '':
@@ -62,11 +65,11 @@ def check_values(df, column_types):
                     warnings.append(f"Invalid int in {col} at row {i}: {v}")
                     df.at[i, col] = ''
         elif typ == 'str':
-            # Ensure string type and fill missing
+            # 文字列型に変換し、欠損値を補完
             df[col] = df[col].replace({None: ''}).astype(str).fillna('')
-    # 欠損値補完 (Fill missing values)
+    # 欠損値補完
     df.fillna('', inplace=True)
-    # 不要カラム削除 (Remove unnecessary columns)
+    # 不要カラム削除
     for col in df.columns:
         if col not in column_types:
             df.drop(col, axis=1, inplace=True)
