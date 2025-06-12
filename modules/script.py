@@ -9,14 +9,14 @@ from check_process import load_column_types, check_values  # データ検証用�
 
 def main():
     """
-    Main workflow for downloading, validating, zipping, and uploading CSV files from/to S3.
-    Steps:
-        1. Load environment variables.
-        2. Get target date from user input.
-        3. List and download CSV files from S3.
-        4. Validate and clean data.
-        5. Zip processed CSVs.
-        6. Upload the zip file to S3.
+    S3からCSVファイルをダウンロード、検証、圧縮し、再度S3にアップロードするメインワークフロー。
+    手順:
+        1. 環境変数の読み込み。
+        2. ユーザー入力から対象日付を取得。
+        3. S3からCSVファイルをリストアップ・ダウンロード。
+        4. データの検証・クリーニング。
+        5. 処理済みCSVをzip化。
+        6. zipファイルをS3にアップロード。
     """
     load_dotenv()
     bucket = os.getenv('S3_BUCKET')

@@ -9,12 +9,12 @@ import zipfile  # ZIPアーカイブ作成用
 
 def zip_csv_files(csv_dir, zip_path):
     """
-    Zip all CSV files in a directory into a single zip archive.
-    Args:
-        csv_dir (str): Directory containing CSV files.
-        zip_path (str): Output path for the zip file.
-    Returns:
-        str: Path to the created zip file.
+    ディレクトリ内のすべてのCSVファイルを1つのzipアーカイブにまとめます。
+    引数:
+        csv_dir (str): CSVファイルが格納されているディレクトリ。
+        zip_path (str): 出力するzipファイルのパス。
+    戻り値:
+        str: 作成されたzipファイルのパス。
     """
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in os.listdir(csv_dir):
@@ -24,11 +24,11 @@ def zip_csv_files(csv_dir, zip_path):
 
 def upload_csv(bucket, key, file_path):
     """
-    Upload a file to S3.
-    Args:
-        bucket (str): S3 bucket name.
-        key (str): S3 key for the uploaded file.
-        file_path (str): Local path to the file to upload.
+    ファイルをS3にアップロードします。
+    引数:
+        bucket (str): S3バケット名。
+        key (str): アップロード先のS3キー。
+        file_path (str): アップロードするローカルファイルのパス。
     """
     s3 = boto3.client('s3')
     s3.upload_file(file_path, bucket, key)
