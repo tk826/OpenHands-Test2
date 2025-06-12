@@ -1,11 +1,23 @@
-import os
-import pandas as pd
-from dotenv import load_dotenv
-from s3_download import list_csv_files, download_csv
-from s3_upload import zip_csv_files, upload_csv
-from check_process import load_column_types, check_values
+import os  # OS操作用
+
+import pandas as pd  # データ操作用
+from dotenv import load_dotenv  # .envファイルから環境変数を読み込むため
+from s3_download import list_csv_files, download_csv  # S3からのダウンロード用ユーティリティ
+from s3_upload import zip_csv_files, upload_csv  # S3へのアップロード用ユーティリティ
+from check_process import load_column_types, check_values  # データ検証用ユーティリティ
+
 
 def main():
+    """
+    Main workflow for downloading, validating, zipping, and uploading CSV files from/to S3.
+    Steps:
+        1. Load environment variables.
+        2. Get target date from user input.
+        3. List and download CSV files from S3.
+        4. Validate and clean data.
+        5. Zip processed CSVs.
+        6. Upload the zip file to S3.
+    """
     load_dotenv()
     bucket = os.getenv('S3_BUCKET')
     prefix = os.getenv('S3_PREFIX')

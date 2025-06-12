@@ -16,7 +16,8 @@ def test_check_values():
         'b': ['1.1', 'bad', '3.3'],
         'c': ['2020-01-01', '2020-13-01', ''],
         'd': [None, 'abc', 'def'],
-        'e': [1, 2, 3]  # extra col
+        'e': [1, 2, 3]  # 余分なカラム
+
     })
     df2, warnings = check_values(df, column_types)
     assert 'Invalid int in a at row 1: x' in warnings
