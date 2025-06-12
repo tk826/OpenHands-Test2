@@ -25,6 +25,24 @@ docker run --rm -it \
 - 必要に応じて環境変数を設定してください。
 - `columns.txt` などのファイルも `/app` にマウントされます。
 
+
+### Dockerでテストを実行する方法
+
+1. Dockerイメージをビルドします。
+
+    ```sh
+    docker build -t s3-batch-app .
+    ```
+
+2. テストを実行します。
+
+    ```sh
+    docker run --rm -v $(pwd):/app s3-batch-app pytest
+    ```
+
+    - 必要に応じて `pytest` の引数を追加できます（例: `pytest tests/test_check_process.py`）。
+    - `requirements.txt` などがある場合はDockerfileにインストールコマンドを追加してください。
+
 ## テストの実行方法
 
 このリポジトリにはユニットテストが `tests/` ディレクトリに含まれています。
