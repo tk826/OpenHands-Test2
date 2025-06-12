@@ -1,6 +1,6 @@
 import os
 import tempfile
-from s3_upload import zip_csv_files, upload_csv
+from modules.s3_upload import zip_csv_files, upload_csv
 from unittest.mock import patch, MagicMock
 
 def test_zip_csv_files():

@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 from unittest.mock import patch, MagicMock
-from s3_download import list_csv_files, download_csv
+from modules.s3_download import list_csv_files, download_csv
 
 def test_list_csv_files():
     with patch('boto3.client') as mock_client:

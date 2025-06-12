@@ -1,6 +1,6 @@
 import pandas as pd
 import tempfile
-from check_process import load_column_types, check_values
+from modules.check_process import load_column_types, check_values
 
 def test_load_column_types():
     with tempfile.NamedTemporaryFile('w+', delete=False) as f:
