@@ -1,0 +1,4 @@
+datetime:datetime
+value1:float
+value2:int
+name:str
