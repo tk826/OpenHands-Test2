@@ -1,8 +1,17 @@
-import os
-import boto3
-from datetime import datetime
+import os  # OS operations
+import boto3  # AWS SDK for Python
+from datetime import datetime  # For date operations
 
 def list_csv_files(bucket, prefix, date_str):
+    """
+    List CSV files in an S3 bucket with a specific prefix and date string.
+    Args:
+        bucket (str): S3 bucket name.
+        prefix (str): Prefix for S3 keys.
+        date_str (str): Date string to filter files.
+    Returns:
+        list: List of matching CSV file keys.
+    """
     s3 = boto3.client('s3')
     response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix)
     files = []
@@ -14,6 +23,15 @@ def list_csv_files(bucket, prefix, date_str):
     return files
 
 def download_csv(bucket, key, local_dir):
+    """
+    Download a CSV file from S3 to a local directory.
+    Args:
+        bucket (str): S3 bucket name.
+        key (str): S3 key of the file.
+        local_dir (str): Local directory to save the file.
+    Returns:
+        str: Local file path of the downloaded CSV.
+    """
     s3 = boto3.client('s3')
     if not os.path.exists(local_dir):
         os.makedirs(local_dir)
