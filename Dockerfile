@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --no-cache-dir boto3 pandas python-dotenv numpy
+RUN pip install --no-cache-dir boto3 pandas python-dotenv numpy pytest
 
 CMD ["python", "script.py"]
