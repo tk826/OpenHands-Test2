@@ -34,6 +34,10 @@ docker run --rm -it \
     docker run --rm -v $(pwd):/app s3-batch-app pytest
     ```
 
+    ```cmd
+    docker run --rm -v "%cd%":/app s3-batch-app pytest
+    docker run --rm -v "%cd%":/app s3-batch-app pytest tests/test_check_process.py
+    ```
     - 必要に応じて `pytest` の引数を追加できます（例: `pytest tests/test_check_process.py`）。
     - `requirements.txt` などがある場合はDockerfileにインストールコマンドを追加してください。
 
