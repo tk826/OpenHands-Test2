@@ -62,11 +62,26 @@ def main():
             dfs.append(df)
         if dfs:
             merged = pd.concat(dfs, ignore_index=True)
+            # 出力ファイル名: 日付_グループ名.csv（グループ名は元ファイル名の3番目の要素）
             outname = f"{date}_{group}.csv"
             outpath = os.path.join(local_dir, outname)
             merged.to_csv(outpath, index=False)
             output_files.append(outpath)
             print(f"出力: {outpath}")
+
+    # --- ここから出力ファイル名のルール変更 ---
+    # すべての入力ファイル名例: 2025-06-12_9000_test.csv, 2025-06-12_9001_test.csv, ...
+    # 出力ファイル名例: 2025-06-12_test.csv, 2025-06-12_test1.csv
+    # グループ名の先頭が同じものは同じ出力ファイルにまとめる
+    # 例: test, test1, test2 ...
+    # 既存のgroupedのキー(date, group)のgroupをグループ名の先頭（数字以外）でまとめる
+    # 例: test, test1, test2 など
+    # ここでは既存のgroupをそのまま使う（test, test1, ...）
+    # ただし、出力ファイル名は {date}_{group}.csv から {date}_{group}.csv へ（既にその通り）
+    # もしグループ名の先頭だけでまとめる場合は下記のように変更
+    # 例: group_head = re.match(r'([a-zA-Z]+)', group).group(1)
+    # ただし、現状の要件では {date}_{group}.csv でOK
+
 
     # 必要ならZIP圧縮やS3アップロード処理をここでoutput_filesに対して行う
     # 例: zip_path = os.path.join(local_dir, f"csv_{date_str}.zip")
