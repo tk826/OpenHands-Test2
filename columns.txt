@@ -5,13 +5,9 @@ value2:int
 value3:int
 value4:int
 value5:int
-value6:int
 value7:int
-value8:int
 value9:int
 value10:float
-value11:float
-value11:float
 value12:float
 value13:float
 value14:float
@@ -21,8 +17,6 @@ value17:float
 value18:float
 value19:float
 value20:float
-value21:float
-value21:float
 value22:float
 value23:float
 value24:float
@@ -32,8 +26,6 @@ value27:float
 value28:float
 value29:float
 value30:float
-value31:float
-value31:float
 value32:float
 value33:float
 value34:float
@@ -43,8 +35,6 @@ value37:float
 value38:float
 value39:float
 value40:float
-value41:float
-value41:float
 value42:float
 value43:float
 value44:float
