@@ -27,3 +27,5 @@ def test_download_csv():
         local_path = download_csv(bucket, key, tmpdir)
         mock_s3.download_file.assert_called_once()
         assert os.path.exists(tmpdir)
+        # local_path should be in tmpdir
+        assert local_path.startswith(tmpdir)

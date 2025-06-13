@@ -26,19 +26,19 @@ def list_csv_files(bucket, prefix, date_str):
                 files.append(key)
     return files
 
-def download_csv(bucket, key, local_dir):
+def download_csv(bucket, key, local_s3_dir):
     """
     S3からCSVファイルをローカルディレクトリにダウンロードします。
     引数:
         bucket (str): S3バケット名。
         key (str): ダウンロードするファイルのS3キー。
-        local_dir (str): ファイルを保存するローカルディレクトリ。
+        local_s3_dir (str): ファイルを保存するローカルディレクトリ。
     戻り値:
         str: ダウンロードしたCSVファイルのローカルパス。
     """
     s3 = boto3.client('s3')
-    if not os.path.exists(local_dir):
-        os.makedirs(local_dir)
-    local_path = os.path.join(local_dir, os.path.basename(key))
+    if not os.path.exists(local_s3_dir):
+        os.makedirs(local_s3_dir)
+    local_path = os.path.join(local_s3_dir, os.path.basename(key))
     s3.download_file(bucket, key, local_path)
     return local_path

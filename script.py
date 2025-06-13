@@ -24,7 +24,8 @@ def main():
     bucket = os.getenv('S3_BUCKET')
     prefix_in = os.getenv('S3_PREFIX_IN')
     prefix_out = os.getenv('S3_PREFIX_OUT')
-    local_dir = os.getenv('LOCAL_DIR')
+    local_s3_dir = os.getenv('LOCAL_S3_DIR', '/tmp/s3_data')
+    local_check_dir = os.getenv('LOCAL_CHECK_DIR', '/tmp/data')
     columns_file = os.getenv('COLUMNS_FILE')
     date_str = os.getenv('TARGET_YMD')
 
@@ -33,7 +34,7 @@ def main():
     print(f"取得CSV: {csv_keys}")
     local_files = []
     for key in csv_keys:
-        local_path = download_csv(bucket, key, local_dir)
+        local_path = download_csv(bucket, key, local_s3_dir)
         local_files.append(local_path)
 
     # ファイル名からグループ化: { (date, group): [(time, filepath), ...] }
@@ -65,7 +66,7 @@ def main():
             merged = pd.concat(dfs, ignore_index=True)
             # 出力ファイル名: 日付_グループ名.csv（グループ名は元ファイル名の3番目の要素）
             outname = f"{date}_{group}.csv"
-            outpath = os.path.join(local_dir, outname)
+            outpath = os.path.join(local_check_dir, outname)
             merged.to_csv(outpath, index=False)
             output_files.append(outpath)
             print(f"出力: {outpath}")
@@ -85,8 +86,8 @@ def main():
 
 
     # 必要ならZIP圧縮やS3アップロード処理をここでoutput_filesに対して行う
-    zip_path = os.path.join(local_dir, f"csv_{date_str}.zip")
-    zip_csv_files(local_dir, zip_path)
+    zip_path = os.path.join(local_check_dir, f"csv_{date_str}.zip")
+    zip_csv_files(local_check_dir, zip_path)
     upload_key = f"{prefix_out}/{date_str}.zip"
     upload_csv(bucket, upload_key, zip_path)
 
