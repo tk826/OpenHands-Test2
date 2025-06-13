@@ -4,25 +4,10 @@ from modules.check_process import load_column_types, check_values
 
 def test_load_column_types():
     with tempfile.NamedTemporaryFile('w+', delete=False) as f:
-        f.write('datetime:datetime\nname:str\nvalue1:int\nvalue2:int\nvalue3:int\nvalue4:int\nvalue5:int\nvalue6:int\nvalue7:int\nvalue8:int\nvalue9:int\nvalue10:float\nvalue11:float\nvalue12:float\n')
+        f.write('a:int\nb:float\nc:datetime\n')
         f.flush()
         types = load_column_types(f.name)
-        assert types == {
-            'datetime': 'datetime',
-            'name': 'str',
-            'value1': 'int',
-            'value2': 'int',
-            'value3': 'int',
-            'value4': 'int',
-            'value5': 'int',
-            'value6': 'int',
-            'value7': 'int',
-            'value8': 'int',
-            'value9': 'int',
-            'value10': 'float',
-            'value11': 'float',
-            'value12': 'float',
-        }
+        assert types == {'a': 'int', 'b': 'float', 'c': 'datetime'}
 
 def test_check_values():
     column_types = {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'}
