@@ -25,7 +25,7 @@ def main():
     prefix = os.getenv('S3_PREFIX')
     local_dir = os.getenv('LOCAL_DIR')
     columns_file = os.getenv('COLUMNS_FILE')
-    date_str = input('対象日付(YYYY-MM-DD): ').strip()
+    date_str = os.getenv('TARGET_YMD')
 
     # S3からCSV一覧取得
     csv_keys = list_csv_files(bucket, prefix, date_str)
