@@ -11,15 +11,8 @@ docker build -t s3-batch-app .
 ### 2. 実行
 
 ```sh
-docker run --rm -it \
-  -e AWS_ACCESS_KEY_ID=your-access-key \
-  -e AWS_SECRET_ACCESS_KEY=your-secret-key \
-  -e S3_BUCKET=your-bucket \
-  -e S3_PREFIX=your/prefix/ \
-  -e LOCAL_DIR=/tmp/data \
-  -e COLUMNS_FILE=columns.txt \
-  -v $(pwd):/app \
-  s3-batch-app
+docker run --rm -it -e S3_BUCKET=your-bucket -e S3_PREFIX_IN=test_data/ -e S3_PREFIX_OUT=zip -e LOCAL_DIR=/tmp/data -e COLUMNS_FILE=columns.txt -e TARGET_YMD=2025-06-13   -v "%cd%":/app   -v "%cd%"/tmp/data:/tmp/data s3-batch-app
+
 ```
 
 - 必要に応じて環境変数を設定してください。

@@ -22,13 +22,14 @@ def main():
     """
     load_dotenv()
     bucket = os.getenv('S3_BUCKET')
-    prefix = os.getenv('S3_PREFIX')
+    prefix_in = os.getenv('S3_PREFIX_IN')
+    prefix_out = os.getenv('S3_PREFIX_OUT')
     local_dir = os.getenv('LOCAL_DIR')
     columns_file = os.getenv('COLUMNS_FILE')
     date_str = os.getenv('TARGET_YMD')
 
     # S3からCSV一覧取得
-    csv_keys = list_csv_files(bucket, prefix, date_str)
+    csv_keys = list_csv_files(bucket, prefix_in, date_str)
     print(f"取得CSV: {csv_keys}")
     local_files = []
     for key in csv_keys:
@@ -84,10 +85,10 @@ def main():
 
 
     # 必要ならZIP圧縮やS3アップロード処理をここでoutput_filesに対して行う
-    # 例: zip_path = os.path.join(local_dir, f"csv_{date_str}.zip")
-    #     zip_csv_files(local_dir, zip_path)
-    #     upload_key = f"{prefix}csv_{date_str}.zip"
-    #     upload_csv(bucket, upload_key, zip_path)
+    zip_path = os.path.join(local_dir, f"csv_{date_str}.zip")
+    zip_csv_files(local_dir, zip_path)
+    upload_key = f"{prefix_out}/{date_str}.zip"
+    upload_csv(bucket, upload_key, zip_path)
 
 if __name__ == '__main__':
     main()
