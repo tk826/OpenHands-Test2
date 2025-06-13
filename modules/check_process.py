@@ -40,7 +40,7 @@ def check_values(df, column_types):
                 try:
                     if pd.isnull(v) or v == '':
                         continue
-                    datetime.strptime(str(v), '%Y-%m-%d')
+                    datetime.strptime(str(v), '%Y-%m-%d %H:%M:%S')
                 except Exception:
                     warnings.append(f"Invalid datetime in {col} at row {i}: {v}")
                     df.at[i, col] = ''
