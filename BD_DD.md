@@ -103,9 +103,11 @@ graph TD;
 - 例: columns.txtのパスはCOLUMNS_FILEで指定します。
 
 - .envファイルでAWS_ACCESS_KEY_IDとAWS_SECRET_ACCESS_KEYを指定します。
+
 | 変数名                | 説明                                 |
 |-----------------------|--------------------------------------|
 | AWS_ACCESS_KEY_ID     | AWSアクセスキー                      |
 | AWS_SECRET_ACCESS_KEY | AWSシークレットキー                  |
+
 ---
 2025年6月11日 作成
