@@ -11,7 +11,7 @@ docker build -t s3-batch-app .
 ### 2. 実行
 
 ```sh
-docker run --rm -it -e S3_BUCKET=your-bucket -e S3_PREFIX_IN=test_data/ -e S3_PREFIX_OUT=zip -e LOCAL_S3_DIR=/tmp/s3_data -e LOCAL_CHECK_DIR=/tmp/data -e COLUMNS_FILE=columns.txt -e TARGET_YMD=2025-06-13   -v "%cd%":/app   -v "%cd%"/tmp/s3_data:/tmp/s3_data   -v "%cd%"/tmp/data:/tmp/data s3-batch-app
+docker run --rm -it -e S3_BUCKET=your-bucket -e S3_PREFIX_IN=test_data -e S3_PREFIX_OUT=zip -e LOCAL_S3_DIR=/tmp/s3_data -e LOCAL_CHECK_DIR=/tmp/data -e COLUMNS_FILE=columns.txt -e TARGET_YMD=2025-06-13   -v "%cd%":/app   -v "%cd%"/tmp/s3_data:/tmp/s3_data   -v "%cd%"/tmp/data:/tmp/data s3-batch-app
 
 ```
 
