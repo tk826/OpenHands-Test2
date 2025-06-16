@@ -29,7 +29,7 @@ docker run --rm -it -e S3_BUCKET=your-bucket -e S3_PREFIX_IN=test_data -e S3_PRE
 
     ```cmd
     docker run --rm -v "%cd%":/app s3-batch-app pytest
-    docker run --rm -v "%cd%":/app s3-batch-app pytest test_check_process.py
+    docker run --rm -v "%cd%":/app s3-batch-app pytest tests/test_check_process.py
     ```
     - 必要に応じて `pytest` の引数を追加できます（例: `pytest test_check_process.py`）。
     - `requirements.txt` などがある場合はDockerfileにインストールコマンドを追加してください。
