@@ -68,6 +68,7 @@ def check_values(df, column_types):
             # 文字列型に変換し、欠損値（Noneなど）を空文字で補完
             df[col] = df[col].replace({None: ''}).astype(str).fillna('')
     # 欠損値（NaNなど）を空文字で補完
+    df = df.astype('object')
     df.fillna('', inplace=True)
     # column_typesに含まれない不要カラムを削除
     for col in df.columns:
