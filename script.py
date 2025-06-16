@@ -65,6 +65,14 @@ def main():
             merged = pd.concat(dfs, ignore_index=True)
             outname = f"{date}_{group}.csv"
             outpath = os.path.join(local_check_dir, outname)
+            # --- 不要な.0を除去するための整形 ---
+            def format_for_csv(df, column_types):
+                for col, typ in column_types.items():
+                    if typ == 'float' and col in df.columns:
+                        df[col] = df[col].apply(lambda x: '' if x == '' or pd.isnull(x) else (str(int(x)) if isinstance(x, (int, float)) and float(x).is_integer() else str(x)))
+                return df
+            merged = format_for_csv(merged, column_types)
+
             merged.to_csv(outpath, index=False)
             print(f"出力: {outpath}")
             return outpath

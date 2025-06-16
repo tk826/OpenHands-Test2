@@ -46,6 +46,14 @@ def test_grouped_output():
                 merged = pd.concat(dfs, ignore_index=True)
                 outname = f"{date}_{group}.csv"
                 outpath = os.path.join(tmpdir, outname)
+                # --- 不要な.0を除去するための整形 ---
+                def format_for_csv(df, column_types):
+                    for col, typ in column_types.items():
+                        if typ == 'float' and col in df.columns:
+                            df[col] = df[col].apply(lambda x: '' if x == '' or pd.isnull(x) else (str(int(x)) if isinstance(x, (int, float)) and float(x).is_integer() else str(x)))
+                    return df
+                merged = format_for_csv(merged, column_types)
+
                 merged.to_csv(outpath, index=False)
                 output_files.append(outpath)
         # 検証: ファイル名と内容
@@ -58,3 +66,25 @@ def test_grouped_output():
             df = pd.read_csv(outpath)
             assert list(df['a']) == [r[0] for r in rows]
             assert list(df['b']) == [r[1] for r in rows]
+
+        # float型の不要な.0が出力されていないことを検証するテスト
+        # float型カラムで空文字や整数値が.0なしで出力されるか
+        float_columns = {'a': 'float', 'b': 'str'}
+        float_test_file = os.path.join(tmpdir, 'float_test.csv')
+        pd.DataFrame({'a': ['42', '', '87.5'], 'b': ['x', 'y', 'z']}).to_csv(float_test_file, index=False)
+        df = pd.read_csv(float_test_file)
+        df, _ = check_values(df, float_columns)
+        def format_for_csv(df, column_types):
+            for col, typ in column_types.items():
+                if typ == 'float' and col in df.columns:
+                    df[col] = df[col].apply(lambda x: '' if x == '' or pd.isnull(x) else (str(int(x)) if isinstance(x, (int, float)) and float(x).is_integer() else str(x)))
+            return df
+        df = format_for_csv(df, float_columns)
+        outpath = os.path.join(tmpdir, 'float_test_out.csv')
+        df.to_csv(outpath, index=False)
+        with open(outpath) as f:
+            lines = f.read().splitlines()
+        assert lines[1].startswith('42,'), f"Expected '42', got {lines[1]}"
+        assert lines[2].startswith(','), f"Expected empty string, got {lines[2]}"
+        assert lines[3].startswith('87.5,'), f"Expected '87.5', got {lines[3]}"
+
