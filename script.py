@@ -8,6 +8,8 @@ from modules.check_process import load_column_types, check_values  # データ�
 
 
 import re
+from joblib import Parallel, delayed
+
 from collections import defaultdict
 def main():
     """
@@ -32,10 +34,8 @@ def main():
     # S3からCSV一覧取得
     csv_keys = list_csv_files(bucket, prefix_in, date_str)
     print(f"取得CSV: {csv_keys}")
-    local_files = []
-    for key in csv_keys:
-        local_path = download_csv(bucket, key, local_s3_dir)
-        local_files.append(local_path)
+    # 並列でS3からダウンロード
+    local_files = Parallel(n_jobs=-1)(delayed(download_csv)(bucket, key, local_s3_dir) for key in csv_keys)
 
     # ファイル名からグループ化: { (date, group): [(time, filepath), ...] }
     pattern = re.compile(r'(\d{4}-\d{2}-\d{2})_(\d+)_([^.]+)\.csv$')
@@ -50,8 +50,7 @@ def main():
 
     column_types = load_column_types(columns_file)
     output_files = []
-    for (date, group), filelist in grouped.items():
-        # 時分でソート
+    def process_group(date, group, filelist):
         filelist.sort()
         dfs = []
         for _, file in filelist:
@@ -64,12 +63,16 @@ def main():
             dfs.append(df)
         if dfs:
             merged = pd.concat(dfs, ignore_index=True)
-            # 出力ファイル名: 日付_グループ名.csv（グループ名は元ファイル名の3番目の要素）
             outname = f"{date}_{group}.csv"
             outpath = os.path.join(local_check_dir, outname)
             merged.to_csv(outpath, index=False)
-            output_files.append(outpath)
             print(f"出力: {outpath}")
+            return outpath
+        return None
+
+    # 並列でグループごとにマージ・出力
+    results = Parallel(n_jobs=-1)(delayed(process_group)(date, group, filelist) for (date, group), filelist in grouped.items())
+    output_files = [r for r in results if r]
 
     # --- ここから出力ファイル名のルール変更 ---
     # すべての入力ファイル名例: 2025-06-12_9000_test.csv, 2025-06-12_9001_test.csv, ...
