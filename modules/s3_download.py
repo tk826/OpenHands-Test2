@@ -29,7 +29,7 @@ def list_csv_files(bucket, prefix, date_str):
                     files.append(key)
     return files
 
-def download_csv(bucket, key, local_s3_dir):
+def download_csv(bucket, key, local_s3_dir, prefix=None):
     """
     S3からCSVファイルをローカルディレクトリにダウンロードします。
     引数:
@@ -43,7 +43,7 @@ def download_csv(bucket, key, local_s3_dir):
     if not os.path.exists(local_s3_dir):
         os.makedirs(local_s3_dir)
     # 新形式: グループ名/ファイル名で保存
-    rel_path = key[len(prefix):] if key.startswith(prefix) else key
+    rel_path = key
     local_path = os.path.join(local_s3_dir, rel_path)
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
     s3.download_file(bucket, key, local_path)

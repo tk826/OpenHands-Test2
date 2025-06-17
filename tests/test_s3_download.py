@@ -24,15 +24,10 @@ def test_download_csv():
     with patch('boto3.client') as mock_client, tempfile.TemporaryDirectory() as tmpdir:
         mock_s3 = MagicMock()
         mock_client.return_value = mock_s3
-        prefix = ''
+        prefix = 'test/'
         key = 'test/2025-06-12_0900.csv'
         bucket = 'bucket'
-        # patch download_csv to use prefix
-        from modules import s3_download
-        orig_prefix = getattr(s3_download, 'prefix', None)
-        s3_download.prefix = prefix
-        local_path = download_csv(bucket, key, tmpdir)
-        s3_download.prefix = orig_prefix
+        local_path = download_csv(bucket, key, tmpdir, prefix)
         mock_s3.download_file.assert_called_once()
         assert os.path.exists(tmpdir)
         # local_path should be in tmpdir and subdir

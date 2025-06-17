@@ -35,7 +35,7 @@ def main():
     csv_keys = list_csv_files(bucket, prefix_in, date_str)
     print(f"取得CSV: {csv_keys}")
     # 並列でS3からダウンロード
-    local_files = Parallel(n_jobs=-1)(delayed(download_csv)(bucket, key, local_s3_dir) for key in csv_keys)
+    local_files = Parallel(n_jobs=-1)(delayed(download_csv)(bucket, key, local_s3_dir, prefix_in) for key in csv_keys)
 
     # ファイル名からグループ化: { (date, group): [(time, filepath), ...] }
     # 新形式: グループ名/日付_時分.csv
