@@ -10,6 +10,8 @@ from modules.check_process import load_column_types, check_values  # データ�
 import re
 from joblib import Parallel, delayed
 
+# テスト用に関数をエクスポート
+__all__ = ['main', 'list_csv_files', 'download_csv']
 from collections import defaultdict
 def main():
     """
@@ -43,6 +45,8 @@ def main():
     grouped = defaultdict(list)
     for file in local_files:
         rel_path = os.path.relpath(file, local_s3_dir)
+        if prefix_in and rel_path.startswith(prefix_in + os.sep):
+            rel_path = rel_path[len(prefix_in) + 1:]  # prefix_in/ を除去
         m = pattern.match(rel_path)
         if m:
             group, date, time = m.group(1), m.group(2), m.group(3)
