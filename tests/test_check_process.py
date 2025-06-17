@@ -119,3 +119,4 @@ def test_grouped_output():
         assert lines[2].startswith(','), f"Expected empty string, got {lines[2]}"
         assert lines[3].startswith('87.5,'), f"Expected '87.5', got {lines[3]}"
 
+
