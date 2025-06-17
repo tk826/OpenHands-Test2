@@ -9,6 +9,7 @@ from datetime import datetime  # 日付操作用
 def list_csv_files(bucket, prefix, date_str):
     """
     指定したプレフィックスと日付文字列でS3バケット内のCSVファイルをリストアップします。
+    新形式: prefix/グループ名/YYYY-MM-DD_hhmm.csv
     引数:
         bucket (str): S3バケット名。
         prefix (str): S3キーのプレフィックス。
@@ -17,13 +18,15 @@ def list_csv_files(bucket, prefix, date_str):
         list: 条件に一致するCSVファイルキーのリスト。
     """
     s3 = boto3.client('s3')
-    response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix)
+    paginator = s3.get_paginator('list_objects_v2')
     files = []
-    if 'Contents' in response:
-        for obj in response['Contents']:
-            key = obj['Key']
-            if key.endswith('.csv') and date_str in key:
-                files.append(key)
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        if 'Contents' in page:
+            for obj in page['Contents']:
+                key = obj['Key']
+                # 例: test/2025-06-12_0900.csv
+                if key.endswith('.csv') and date_str in os.path.basename(key):
+                    files.append(key)
     return files
 
 def download_csv(bucket, key, local_s3_dir):
@@ -39,6 +42,9 @@ def download_csv(bucket, key, local_s3_dir):
     s3 = boto3.client('s3')
     if not os.path.exists(local_s3_dir):
         os.makedirs(local_s3_dir)
-    local_path = os.path.join(local_s3_dir, os.path.basename(key))
+    # 新形式: グループ名/ファイル名で保存
+    rel_path = key[len(prefix):] if key.startswith(prefix) else key
+    local_path = os.path.join(local_s3_dir, rel_path)
+    os.makedirs(os.path.dirname(local_path), exist_ok=True)
     s3.download_file(bucket, key, local_path)
     return local_path

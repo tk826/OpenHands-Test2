@@ -38,12 +38,14 @@ def main():
     local_files = Parallel(n_jobs=-1)(delayed(download_csv)(bucket, key, local_s3_dir) for key in csv_keys)
 
     # ファイル名からグループ化: { (date, group): [(time, filepath), ...] }
-    pattern = re.compile(r'(\d{4}-\d{2}-\d{2})_(\d+)_([^.]+)\.csv$')
+    # 新形式: グループ名/日付_時分.csv
+    pattern = re.compile(r'([^/]+)/([0-9]{4}-[0-9]{2}-[0-9]{2})_([0-9]+)\.csv$')
     grouped = defaultdict(list)
     for file in local_files:
-        m = pattern.search(os.path.basename(file))
+        rel_path = os.path.relpath(file, local_s3_dir)
+        m = pattern.match(rel_path)
         if m:
-            date, time, group = m.group(1), m.group(2), m.group(3)
+            group, date, time = m.group(1), m.group(2), m.group(3)
             grouped[(date, group)].append((int(time), file))
         else:
             print(f"ファイル名形式不正: {file}")

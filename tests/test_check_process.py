@@ -44,22 +44,25 @@ def test_grouped_output():
             f.write('a:int\nb:str\n')
         # 入力ファイルを作成
         files = [
-            (f'{tmpdir}/2025-06-12_9000_test.csv', 'a,b\n1,x\n'),
-            (f'{tmpdir}/2025-06-12_9001_test.csv', 'a,b\n2,y\n'),
-            (f'{tmpdir}/2025-06-12_9000_test1.csv', 'a,b\n3,z\n'),
-            (f'{tmpdir}/2025-06-12_9001_test1.csv', 'a,b\n4,w\n'),
-            (f'{tmpdir}/2025-06-12_9002_test1.csv', 'a,b\n5,v\n'),
+            (f'{tmpdir}/test/2025-06-12_9000.csv', 'a,b\n1,x\n'),
+            (f'{tmpdir}/test/2025-06-12_9001.csv', 'a,b\n2,y\n'),
+            (f'{tmpdir}/test1/2025-06-12_9000.csv', 'a,b\n3,z\n'),
+            (f'{tmpdir}/test1/2025-06-12_9001.csv', 'a,b\n4,w\n'),
+            (f'{tmpdir}/test1/2025-06-12_9002.csv', 'a,b\n5,v\n'),
         ]
         for path, content in files:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, 'w') as f:
                 f.write(content)
         # 疑似local_filesリストを作成
-        pattern = re.compile(r'(\d{4}-\d{2}-\d{2})_(\d+)_([^.]+)\.csv$')
+        # 新形式: グループ名/日付_時分.csv
+        pattern = re.compile(r'([^/]+)/([0-9]{4}-[0-9]{2}-[0-9]{2})_([0-9]+)\.csv$')
         grouped = defaultdict(list)
         for path, _ in files:
-            m = pattern.search(os.path.basename(path))
+            rel_path = os.path.relpath(path, tmpdir)
+            m = pattern.match(rel_path)
             if m:
-                date, time, group = m.group(1), m.group(2), m.group(3)
+                group, date, time = m.group(1), m.group(2), m.group(3)
                 grouped[(date, group)].append((int(time), path))
         # 本番同様にグループ化・ソート・出力
         column_types = {'a': 'int', 'b': 'str'}
