@@ -37,9 +37,11 @@ def check_values(df, column_types):
         if typ == 'datetime':
             # 日付フォーマットをチェック（YYYY-MM-DD形式）
             for i, v in df[col].items():
+                if pd.isnull(v) or v == '':
+                    warnings.append(f"Empty or NULL in {col} at row {i}")
+                    df.at[i, col] = ''
+                    continue
                 try:
-                    if pd.isnull(v) or v == '':
-                        continue
                     datetime.strptime(str(v), '%Y-%m-%d %H:%M:%S')
                 except Exception:
                     warnings.append(f"Invalid datetime in {col} at row {i}: {v}")
@@ -47,9 +49,11 @@ def check_values(df, column_types):
         elif typ == 'float':
             # float値かどうかをチェック
             for i, v in df[col].items():
+                if pd.isnull(v) or v == '':
+                    warnings.append(f"Empty or NULL in {col} at row {i}")
+                    df.at[i, col] = ''
+                    continue
                 try:
-                    if pd.isnull(v) or v == '':
-                        continue
                     float(v)
                 except Exception:
                     warnings.append(f"Invalid float in {col} at row {i}: {v}")
@@ -57,15 +61,21 @@ def check_values(df, column_types):
         elif typ == 'int':
             # int値かどうかをチェック
             for i, v in df[col].items():
+                if pd.isnull(v) or v == '':
+                    warnings.append(f"Empty or NULL in {col} at row {i}")
+                    df.at[i, col] = ''
+                    continue
                 try:
-                    if pd.isnull(v) or v == '':
-                        continue
                     int(float(v))
                 except Exception:
                     warnings.append(f"Invalid int in {col} at row {i}: {v}")
                     df.at[i, col] = ''
         elif typ == 'str':
             # 文字列型に変換し、欠損値（Noneなど）を空文字で補完
+            for i, v in df[col].items():
+                if pd.isnull(v) or v == '' or v is None:
+                    warnings.append(f"Empty or NULL in {col} at row {i}")
+                    df.at[i, col] = ''
             df[col] = df[col].replace({None: ''}).astype(str).fillna('')
     # 欠損値（NaNなど）を空文字で補完
     df = df.astype('object')
