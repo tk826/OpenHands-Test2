@@ -23,6 +23,9 @@ def test_check_values():
     assert 'Invalid int in a at row 1: x' in warnings
     assert 'Invalid float in b at row 1: bad' in warnings
     assert 'Invalid datetime in c at row 1: 2020-13-01 00:00:00' in warnings
+    assert 'Empty or NULL in c at row 2' in warnings
+    assert 'Empty or NULL in d at row 0' in warnings
+
     assert 'e' not in df2.columns
     assert df2['a'][1] == ''
     assert df2['b'][1] == ''
