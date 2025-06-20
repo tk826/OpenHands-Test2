@@ -1,0 +1,12 @@
+#!/bin/bash
+if [[ "$1" == "folders:upload" ]]; then
+  echo "[MOCK] box $@"
+  exit "${MOCK_BOX_RTESULT:-0}"
+else
+  if [ -x /usr/local/bin/box ]; then
+    exec /usr/local/bin/box "$@"
+  else
+    echo "box CLI not found for passthrough" >&2
+    exit 127
+  fi
+fi
