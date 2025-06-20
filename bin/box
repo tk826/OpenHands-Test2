@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ "$1" == "folders:upload" ]]; then
   echo "[MOCK] box $@"
-  exit "$MOCK_BOX_RTESULT"
+  exit "${MOCK_BOX_RTESULT:-0}"
 else
   next_box=$(command -v box | grep -v "$0" | head -n1)
   if [ -x "$next_box" ]; then
