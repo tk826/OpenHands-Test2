@@ -1,0 +1,18 @@
+#!/bin/bash
+# BOX CLI mock wrapper
+if [[ "$1" == "folders:upload" ]]; then
+  if [[ -n "$MOCK_BOX_RTESULT" ]]; then
+    echo "$MOCK_BOX_RTESULT"
+  else
+    echo "box folders:upload mock output"
+  fi
+  exit 0
+else
+  # Fallback to real box if available
+  if command -v box.real >/dev/null 2>&1; then
+    exec box.real "$@"
+  else
+    echo "Error: box.real not found and not a mock command" >&2
+    exit 127
+  fi
+fi
