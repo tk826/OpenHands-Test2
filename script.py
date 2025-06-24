@@ -4,6 +4,7 @@ import pandas as pd  # データ操作用
 from dotenv import load_dotenv  # .envファイルから環境変数を読み込むため
 from modules.s3_download import list_csv_files, download_csv  # S3からのダウンロード用ユーティリティ
 from modules.s3_upload import zip_csv_files, upload_csv  # S3へのアップロード用ユーティリティ
+from modules.box_upload import upload_to_box  # BOXへのアップロード用ユーティリティ
 from modules.check_process import load_column_types, check_values  # データ検証用ユーティリティ
 
 
@@ -106,6 +107,14 @@ def main():
     zip_path = os.path.join(local_check_dir, f"csv_{date_str}.zip")
     zip_csv_files(local_check_dir, zip_path)
     upload_key = f"{prefix_out}/{date_str}.zip"
+    # BOXにZIPファイルをアップロード
+    box_folder_id = os.getenv('BOX_FOLDER_ID')  # Noneならデフォルト
+    try:
+        box_file_id = upload_to_box(zip_path, folder_id=box_folder_id)
+        print(f"BOXにアップロード完了: file_id={box_file_id}")
+    except Exception as e:
+        print(f"BOXアップロード失敗: {e}")
+
     upload_csv(bucket, upload_key, zip_path)
 
 if __name__ == '__main__':
