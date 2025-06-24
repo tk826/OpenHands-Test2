@@ -30,5 +30,13 @@ def upload_csv(bucket, key, file_path):
         key (str): アップロード先のS3キー。
         file_path (str): アップロードするローカルファイルのパス。
     """
+    import botocore
     s3 = boto3.client('s3')
-    s3.upload_file(file_path, bucket, key)
+    try:
+        s3.upload_file(file_path, bucket, key)
+    except botocore.exceptions.NoCredentialsError:
+        raise RuntimeError('S3認証情報が見つかりません。AWS_ACCESS_KEY_IDとAWS_SECRET_ACCESS_KEYを設定してください。')
+    except botocore.exceptions.PartialCredentialsError:
+        raise RuntimeError('S3認証情報が不完全です。AWS_ACCESS_KEY_IDとAWS_SECRET_ACCESS_KEYを確認してください。')
+    except Exception as e:
+        raise RuntimeError(f'S3アップロード失敗: {e}')
