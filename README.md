@@ -19,6 +19,21 @@ docker run --rm -it -e S3_BUCKET=s3-bucket-openhands -e S3_PREFIX_IN=test_data -
 - `columns.txt` などのファイルも `/app` にマウントされます。
 
 
+## Bashによる実行方法
+
+1. 必要な環境変数を設定してください（.envファイルまたは環境変数）。
+2. AWS CLIがインストール・設定されていることを確認してください。
+3. 以下のコマンドで実行できます。
+
+```sh
+bash script.sh
+```
+
+- Python版と同じ環境変数が必要です。
+- データ検証・マージ処理はBashでは省略または簡易化されています。
+
+
+
 ### Dockerでテストを実行する方法
 
 1. テストを実行します。
