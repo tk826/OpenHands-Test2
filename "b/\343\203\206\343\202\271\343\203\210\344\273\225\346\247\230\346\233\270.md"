@@ -1,0 +1,81 @@
+# テスト仕様書
+
+本書は、各種Pythonモジュール（check_process.py, s3_download.py, s3_upload.py）について、カバレッジ100%を目指したテスト仕様を記載します。
+
+---
+
+## 1. check_process.py
+
+### 対象関数
+- load_column_types
+- check_values
+
+### テストケース一覧
+
+| No | 入力条件 | 実行方法 | 想定結果 |
+|----|----------|----------|----------|
+| 1  | 正常なカラム定義ファイル | load_column_types(パス) | 正しいdictが返る |
+| 2  | 不正なカラム定義ファイル（区切りなし等） | load_column_types(パス) | 例外発生（ValueError等）|
+| 3  | int/float/datetime/str型の正常値 | check_values(df, column_types) | 変換・警告なし |
+| 4  | int/float/datetime型に不正値（例: 'x', 'bad', '2020-13-01 00:00:00'） | check_values(df, column_types) | 空文字に変換、警告リストに記録 |
+| 5  | 欠損値（NaN, None, ''） | check_values(df, column_types) | 空文字に変換、警告リストに記録 |
+| 6  | columns.txtにないカラム | check_values(df, column_types) | DataFrameから削除される |
+| 7  | str型にNone/NULL | check_values(df, column_types) | 空文字に補完、警告なし |
+| 8  | 想定外の型指定 | check_values(df, column_types) | スキップ（警告も出さない）|
+
+#### 想定外テストケース
+- カラム名が空文字や重複している場合 → 最初のもののみ有効、以降は上書き
+- columns.txtが空の場合 → 空dictが返る
+
+---
+
+## 2. s3_download.py
+
+### 対象関数
+- list_csv_files
+- download_csv
+
+### テストケース一覧
+
+| No | 入力条件 | 実行方法 | 想定結果 |
+|----|----------|----------|----------|
+| 1  | バケット・プレフィックス・日付が一致するCSVが存在 | list_csv_files(bucket, prefix, date) | 一致するCSVファイルリストが返る |
+| 2  | 一致しないファイル（拡張子違い/日付不一致） | list_csv_files(bucket, prefix, date) | 除外される |
+| 3  | S3にファイルが存在しない | list_csv_files(bucket, prefix, date) | 空リスト |
+| 4  | 正常なS3キー/ローカルパス | download_csv(bucket, key, local_dir, prefix) | ファイルがダウンロードされる（mockで確認）|
+| 5  | 想定外のキー/パス | download_csv(bucket, key, local_dir, prefix) | 例外発生またはエラー |
+
+#### 想定外テストケース
+- S3クライアントが例外を投げる場合 → download_csvで例外伝播
+
+---
+
+## 3. s3_upload.py
+
+### 対象関数
+- zip_csv_files
+- upload_csv
+
+### テストケース一覧
+
+| No | 入力条件 | 実行方法 | 想定結果 |
+|----|----------|----------|----------|
+| 1  | 複数CSVファイルが存在 | zip_csv_files(csv_dir, zip_path) | ZIPファイルが作成される |
+| 2  | CSVファイルが1つもない | zip_csv_files(csv_dir, zip_path) | 空ZIPが作成される |
+| 3  | 正常なファイルパス/バケット/キー | upload_csv(bucket, key, file_path) | S3にアップロードされる（mockで確認）|
+| 4  | 想定外のファイルパス | upload_csv(bucket, key, file_path) | 例外発生 |
+
+#### 想定外テストケース
+- boto3クライアントが例外を投げる場合 → upload_csvで例外伝播
+
+---
+
+## 4. テストカバレッジ
+
+- pytest, unittest.mockを用いて全分岐・例外パスを網羅
+- 欠損値・不正値・想定外入力も含めて警告または例外となることを確認
+- スキップまたは警告の扱いは、check_valuesでは「警告リストに記録」、想定外型は「スキップ（警告なし）」とする
+- 正常/不正な値の例は上記テーブルに具体的に記載
+
+---
+
