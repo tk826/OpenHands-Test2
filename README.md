@@ -34,3 +34,12 @@ docker run --rm -it -e S3_BUCKET=s3-bucket-openhands -e S3_PREFIX_IN=test_data -
     - 必要に応じて `pytest` の引数を追加できます（例: `pytest tests/test_check_process.py`）。
     - `requirements.txt` などがある場合はDockerfileにインストールコマンドを追加してください。
 
+
+
+## テスト仕様書
+
+- 各テストファイルごとに100%カバレッジのテスト仕様書を tests/ ディレクトリに配置しています。
+  - test_check_process_testplan.md
+  - test_s3_download_testplan.md
+  - test_s3_upload_testplan.md
+
