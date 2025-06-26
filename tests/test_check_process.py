@@ -1,3 +1,22 @@
+"""
+テスト仕様書
+
+1. test_load_column_types
+   - 入力条件: 'a:int\nb:float\nc:datetime\n' 形式のファイル
+   - 実行方法: load_column_types() を呼び出す
+   - 想定結果: {'a': 'int', 'b': 'float', 'c': 'datetime'} が返る
+
+2. test_check_values
+   - 入力条件: int/float/datetime/str型のカラムを持つDataFrame、不正値や余分なカラムを含む
+   - 実行方法: check_values() を呼び出す
+   - 想定結果: 不正値に対する警告が返り、余分なカラムは除去される
+
+3. test_grouped_output
+   - 入力条件: テスト用ディレクトリ・ファイルを作成し、グループ化処理をテスト
+   - 実行方法: テスト用ダミー関数でグループ化出力を検証
+   - 想定結果: グループ化された出力が正しく生成される
+"""
+
 import pandas as pd
 import tempfile
 from modules.check_process import load_column_types, check_values

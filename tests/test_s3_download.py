@@ -1,3 +1,17 @@
+"""
+テスト仕様書
+
+1. test_list_csv_files
+   - 入力条件: S3バケットに複数のCSVファイルとその他ファイルが存在
+   - 実行方法: list_csv_files() を呼び出す（boto3はモック）
+   - 想定結果: 指定日付のCSVファイルのみリストアップされる
+
+2. test_download_csv
+   - 入力条件: S3バケットからCSVファイルをダウンロード（boto3はモック）
+   - 実行方法: download_csv() を呼び出す
+   - 想定結果: 指定ファイルがダウンロードされる
+"""
+
 import os
 import tempfile
 import pytest

@@ -1,3 +1,17 @@
+"""
+テスト仕様書
+
+1. test_zip_csv_files
+   - 入力条件: 複数のCSVファイルが存在するディレクトリ
+   - 実行方法: zip_csv_files() を呼び出す
+   - 想定結果: 指定したzipファイルが作成される
+
+2. test_upload_csv
+   - 入力条件: S3バケットにzipファイルをアップロード（boto3はモック）
+   - 実行方法: upload_csv() を呼び出す
+   - 想定結果: S3のupload_fileが1回呼ばれる
+"""
+
 import os
 import tempfile
 from modules.s3_upload import zip_csv_files, upload_csv
