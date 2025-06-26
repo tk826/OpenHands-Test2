@@ -1,0 +1,59 @@
+# テスト仕様書
+
+本書は、/workspace 配下の各Pythonモジュール・スクリプトに対してカバレッジ100%を満たすテストケースの仕様をまとめたものです。
+
+## 1. modules/check_process.py
+
+### テスト対象関数
+- load_column_types
+- check_values
+
+### テストケース一覧
+| テストケース名 | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| 正常系: 型定義ファイル読込 | 'a:int\nb:float\nc:datetime\n' 形式のファイル | load_column_types(ファイルパス) | {'a': 'int', 'b': 'float', 'c': 'datetime'} を返す |
+| 正常系: 型チェック・警告出力 | DataFrameに不正値/余分なカラム含む | check_values(df, column_types) | 不正値は空文字化、警告リスト返却、余分なカラム削除 |
+| 欠損値補完 | DataFrameにNone/NaN含む | check_values(df, column_types) | 欠損値は空文字化される |
+| 文字列型の補完 | str型カラムにNone | check_values(df, column_types) | Noneは空文字化される |
+| 不要カラム削除 | columns.txtにないカラム | check_values(df, column_types) | DataFrameから削除される |
+| float型の整数値出力 | float型カラムに整数値 | check_values(df, column_types) + CSV出力 | .0なしで出力される |
+
+## 2. modules/s3_download.py
+
+### テスト対象関数
+- list_csv_files
+- download_csv
+
+### テストケース一覧
+| テストケース名 | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| S3リスト取得:日付フィルタ | S3に複数ファイル存在 | list_csv_files(bucket, prefix, date_str) | 指定日付のCSVのみリストアップ |
+| S3ダウンロード | S3にCSV存在 | download_csv(bucket, key, local_dir, prefix) | 指定パスにファイルダウンロード |
+
+## 3. modules/s3_upload.py
+
+### テスト対象関数
+- zip_csv_files
+- upload_csv
+
+### テストケース一覧
+| テストケース名 | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| ZIP圧縮 | ディレクトリに複数CSV | zip_csv_files(csv_dir, zip_path) | ZIPファイルが作成される |
+| S3アップロード | ZIPファイル存在 | upload_csv(bucket, key, zip_path) | S3クライアントのupload_fileが呼ばれる |
+
+## 4. script.py
+
+### テスト対象関数
+- main
+
+### テストケース一覧
+| テストケース名 | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| メイン処理正常系 | 必要な環境変数・S3/ローカルにCSV | main() | 全処理が正常に完了し、ZIPがS3にアップロードされる |
+
+---
+
+- すべてのテストはpytestで実行可能です。
+- 各テストはmockや一時ファイル/ディレクトリを活用し、外部依存を排除しています。
+- カバレッジ100%を満たすよう網羅的にテストされています。
