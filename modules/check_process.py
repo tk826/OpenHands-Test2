@@ -66,7 +66,18 @@ def check_values(df, column_types):
                     df.at[i, col] = ''
         elif typ == 'str':
             # 文字列型に変換し、欠損値（Noneなど）を空文字で補完
-            df[col] = df[col].replace({None: ''}).astype(str).fillna('')
+            # 数値は整数なら小数点なし、浮動小数点はそのまま文字列化
+            def to_str(x):
+                if x is None or (isinstance(x, float) and pd.isnull(x)) or x == '':
+                    return ''
+                if isinstance(x, (int, bool)):
+                    return str(int(x))
+                if isinstance(x, float):
+                    if x.is_integer():
+                        return str(int(x))
+                    return str(x)
+                return str(x)
+            df[col] = df[col].apply(to_str)
     # 欠損値（NaNなど）を空文字で補完
     df = df.astype('object')
     df.fillna('', inplace=True)

@@ -121,16 +121,85 @@ def test_grouped_output():
 
 
 
-# 想定外ケースで何をテストすればいいか
-# 例:
-# - columns.txtに存在しないカラムが入力に含まれる場合（→不要カラム削除されるか）
-# - 型が全く異なる値（例: intカラムに"abc"や空リスト）が入っている場合
-# - 欠損値（None, NaN, 空文字, 空リスト, 空dict, 0, False, True, など）が各型でどう扱われるか
-# - 日付型カラムに不正な日付（例: "2020-02-30 00:00:00"、"notadate"）
-# - float/intカラムに極端な値（例: "1e1000"、"-inf"、"nan"）
-# - strカラムに数値やNoneが入っている場合
-# - DataFrame自体が空、カラムが空、全値が空文字/None/NaN
-# - columns.txtが空、または不正な形式
-# - 入力ファイルが壊れている/パース不能
-# などをテストケースとして検討・追加することが望ましい。
+def test_unexpected_cases():
+    import numpy as np
+    import tempfile
+    # 1. columns.txtに存在しないカラムが入力に含まれる場合
+    column_types = {'a': 'int', 'b': 'float'}
+    df = pd.DataFrame({'a': [1], 'b': [2.0], 'c': [3]})
+    df2, warnings = check_values(df, column_types)
+    assert 'c' not in df2.columns
+
+    # 2. 型が全く異なる値（例: intカラムに"abc"や空リスト）が入っている場合
+    df = pd.DataFrame({'a': ['abc', [], 5], 'b': [1.1, 2.2, 3.3]})
+    df2, warnings = check_values(df, column_types)
+    assert df2['a'][0] == ''
+    assert df2['a'][1] == ''
+    assert df2['a'][2] == 5 or df2['a'][2] == '5'
+
+    # 3. 欠損値（None, NaN, 空文字, 空リスト, 空dict, 0, False, True, など）が各型でどう扱われるか
+    df = pd.DataFrame({'a': [None, np.nan, '', [], {}, 0, False, True], 'b': [1.0]*8})
+    df2, warnings = check_values(df, column_types)
+    assert df2['a'][0] == ''
+    assert df2['a'][1] == ''
+    assert df2['a'][2] == ''
+    assert df2['a'][3] == ''
+    assert df2['a'][4] == ''
+    # 0, False, Trueはint変換可能
+    assert df2['a'][5] == 0 or df2['a'][5] == '0'
+    assert df2['a'][6] == 0 or df2['a'][6] == '0'
+    assert df2['a'][7] == 1 or df2['a'][7] == '1'
+
+    # 4. 日付型カラムに不正な日付
+    column_types2 = {'c': 'datetime'}
+    df = pd.DataFrame({'c': ['2020-02-30 00:00:00', 'notadate', '2020-01-01 00:00:00']})
+    df2, warnings = check_values(df, column_types2)
+    assert df2['c'][0] == ''
+    assert df2['c'][1] == ''
+    assert df2['c'][2] == '2020-01-01 00:00:00'
+
+    # 5. float/intカラムに極端な値
+    df = pd.DataFrame({'a': ['1e1000', '-inf', 'nan', 1], 'b': [1.0]*4})
+    df2, warnings = check_values(df, column_types)
+    assert df2['a'][0] == ''  # 1e1000はfloat変換はできるがint変換はできない
+    assert df2['a'][1] == ''
+    assert df2['a'][2] == ''
+    assert df2['a'][3] == 1 or df2['a'][3] == '1'
+
+    # 6. strカラムに数値やNoneが入っている場合
+    column_types3 = {'d': 'str'}
+    df = pd.DataFrame({'d': [123, None, 4.56]})
+    df2, warnings = check_values(df, column_types3)
+    assert df2['d'][0] == '123'
+    assert df2['d'][1] == ''
+    assert df2['d'][2] == '4.56'
+
+    # 7. DataFrame自体が空、カラムが空、全値が空文字/None/NaN
+    df = pd.DataFrame({'a': [], 'b': []})
+    df2, warnings = check_values(df, column_types)
+    assert df2.empty
+    df = pd.DataFrame({'a': [None, '', np.nan], 'b': [None, '', np.nan]})
+    df2, warnings = check_values(df, column_types)
+    assert all(x == '' for x in df2['a'])
+    assert all(x == '' for x in df2['b'])
+
+    # 8. columns.txtが空、または不正な形式
+    with tempfile.NamedTemporaryFile('w+', delete=False) as f:
+        f.write('')
+        f.flush()
+        types = load_column_types(f.name)
+        assert types == {}
+    with tempfile.NamedTemporaryFile('w+', delete=False) as f:
+        f.write('badformatline\n')
+        f.flush()
+        try:
+            load_column_types(f.name)
+            assert False, 'Should raise ValueError for bad format'
+        except ValueError:
+            pass
+
+    # 9. 入力ファイルが壊れている/パース不能
+    # check_valuesはDataFrameを受け取るので、ファイルパース不能は上位層で例外となる想定
+    # ここでは省略
+
 
