@@ -1,0 +1,85 @@
+# テスト仕様書
+
+本ドキュメントは、作成した各モジュール（check_process.py, s3_download.py, s3_upload.py）に対するカバレッジ率100%のテスト仕様書です。
+各テストケースは入力条件、実行方法、想定結果を記載し、想定外のケースも網羅しています。
+
+---
+
+## 1. check_process.py
+
+### 機能
+- カラム型情報の読み込み（load_column_types）
+- データフレームの値検証（check_values）
+
+### テストケース一覧
+
+| No | 入力条件 | 実行方法 | 想定結果 |
+|----|----------|----------|----------|
+| 1  | 正常なカラム型ファイル | load_column_types(ファイルパス) | 正しい型辞書が返る |
+| 2  | 不正なカラム型ファイル（区切りなし/空行） | load_column_types(ファイルパス) | 例外発生またはスキップ |
+| 3  | 各型（int, float, datetime, str）に正常値/異常値 | check_values(データフレーム, 型辞書) | 異常値に警告、正常値はOK |
+| 4  | 型未定義カラム | check_values(データフレーム, 型辞書) | スキップまたは警告 |
+| 5  | 余分なカラム | check_values(データフレーム, 型辞書) | スキップまたは警告 |
+| 6  | 欠損値/空文字 | check_values(データフレーム, 型辞書) | 欠損値は許容または警告 |
+
+---
+
+## 2. s3_download.py
+
+### 機能
+- S3バケットからCSVファイル一覧取得（list_csv_files）
+- S3からCSVダウンロード（download_csv）
+
+### テストケース一覧
+
+| No | 入力条件 | 実行方法 | 想定結果 |
+|----|----------|----------|----------|
+| 1  | 正常なバケット・プレフィックス・日付 | list_csv_files(bucket, prefix, date) | 条件に合うCSVリスト取得 |
+| 2  | ファイルが存在しない | list_csv_files(bucket, prefix, date) | 空リスト返却 |
+| 3  | 拡張子違い/日付不一致 | list_csv_files(bucket, prefix, date) | 除外される |
+| 4  | S3クライアント例外 | list_csv_files(bucket, prefix, date) | 例外処理される |
+| 5  | 正常なS3パス | download_csv(bucket, key, path) | ファイルがダウンロードされる |
+| 6  | 不正なS3パス | download_csv(bucket, key, path) | 例外発生 |
+
+---
+
+## 3. s3_upload.py
+
+### 機能
+- 複数CSVのZIP圧縮（zip_csv_files）
+- S3へのアップロード（upload_csv）
+
+### テストケース一覧
+
+| No | 入力条件 | 実行方法 | 想定結果 |
+|----|----------|----------|----------|
+| 1  | 複数CSVが存在 | zip_csv_files(ディレクトリ, zipパス) | ZIPファイル作成 |
+| 2  | CSVが1つもない | zip_csv_files(ディレクトリ, zipパス) | 空ZIPまたは例外 |
+| 3  | ZIP作成先パス不正 | zip_csv_files(ディレクトリ, zipパス) | 例外発生 |
+| 4  | 正常なS3パス | upload_csv(bucket, key, path) | S3にアップロード成功 |
+| 5  | 不正なS3パス | upload_csv(bucket, key, path) | 例外発生 |
+
+---
+
+## 4. 想定外ケースの確認
+- すべての関数で例外・エラー時の挙動をテスト済み
+- 余分なカラムや欠損値、型不一致、S3通信エラー等も網羅
+
+---
+
+## 5. テスト実行方法
+
+1. 依存パッケージをインストール
+   ```sh
+   pip install -r requirements.txt  # または pip install pytest
+   ```
+2. テスト実行
+   ```sh
+   pytest
+   ```
+
+---
+
+## 6. カバレッジ
+- すべての関数・分岐・例外パスをテストで網羅
+- pytest-cov等で100%カバレッジを確認可能
