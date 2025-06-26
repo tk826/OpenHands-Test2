@@ -1,0 +1,88 @@
+# テスト仕様書
+
+本書は、作成した各モジュール・スクリプトのカバレッジ100%を満たすテストケース仕様を記載します。
+
+---
+
+## 1. modules/check_process.py
+
+### テスト対象関数
+- load_column_types
+- check_values
+
+### テストケース一覧
+| テストケースID | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| CP-01 | columns.txt: 'a:int\nb:float\nc:datetime' | load_column_types('columns.txt') | {'a': 'int', 'b': 'float', 'c': 'datetime'} を返す |
+| CP-02 | DataFrame: a=['1','x','3'], b=['1.1','bad','3.3'], c=['2020-01-01 12:00:00','2020-13-01 00:00:00',''], d=[None,'abc','def'], e=[1,2,3] | check_values(df, column_types) | 型不一致・日付不正・null等の警告が返る |
+| CP-03 | 想定外カラムが含まれるDataFrame | check_values(df, column_types) | 余分なカラムは無視される |
+
+---
+
+## 2. modules/s3_download.py
+
+### テスト対象関数
+- list_csv_files
+- download_csv
+
+### テストケース一覧
+| テストケースID | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| SD-01 | S3バケットに test/2025-06-12_0900.csv, test/2025-06-11_0900.csv, test1/2025-06-12_0900.csv, test/other.txt | list_csv_files('bucket', '', '2025-06-12') | ['test/2025-06-12_0900.csv', 'test1/2025-06-12_0900.csv'] を返す |
+| SD-02 | S3バケットに存在しないファイル指定 | download_csv('bucket', 'notfound.csv', 'dest.csv') | 例外発生またはエラー処理される |
+
+---
+
+## 3. modules/s3_upload.py
+
+### テスト対象関数
+- zip_csv_files
+- upload_csv
+
+### テストケース一覧
+| テストケースID | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| SU-01 | ディレクトリに a.csv, b.csv | zip_csv_files(csv_dir, zip_path) | zip_pathにzipファイルが作成される |
+| SU-02 | S3バケットにアップロード | upload_csv('bucket', 'key', 'file.csv') | S3に正常アップロードされる |
+| SU-03 | 空ディレクトリをzip_csv_files | zip_csv_files(empty_dir, zip_path) | 空のzipファイルが作成される |
+
+---
+
+## 4. script.py
+
+### テスト対象関数
+- main
+
+### テストケース一覧
+| テストケースID | 入力条件 | 実行方法 | 想定結果 |
+|---|---|---|---|
+| SP-01 | .env, columns.txt, S3バケット等をセット | main() | S3からダウンロード→検証→圧縮→アップロードが正常に完了する |
+| SP-02 | 想定外の環境変数やファイル欠如 | main() | 適切なエラー・例外が発生する |
+
+---
+
+## 5. 想定外ケース
+
+- すべての関数で、想定外の入力（型違い、ファイル欠如、空データ等）でも例外やエラーが適切に処理されることを確認する。
+
+---
+
+## 6. 実行方法
+
+- pytestコマンドで全テストを実行可能:
+  ```sh
+  pytest
+  ```
+- Docker環境では:
+  ```sh
+  docker run --rm -v $(pwd):/app s3-batch-app pytest
+  ```
+
+---
+
+## 7. カバレッジ確認
+
+- pytest-cov等でカバレッジ100%を確認:
+  ```sh
+  pytest --cov=modules --cov=script.py
+  ```
