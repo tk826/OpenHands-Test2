@@ -35,16 +35,16 @@ pytest tests/test_s3_download.py
 ### download_csv
 | No | 正常/異常 | 入力(bucket, key, local_s3_dir, prefix) | 事前状態 | 期待結果 | 備考 |
 |----|----------|-----------------------------------------|----------|----------|------|
-| 1  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | tmpdir存在 | 正常にダウンロード、パス返却 |  |
-| 2  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, None | tmpdir存在 | 正常にダウンロード、パス返却 | prefix省略 |
-| 3  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | tmpdir未作成 | 正常にディレクトリ作成しダウンロード | ディレクトリ自動作成 |
-| 4  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | keyがサブディレクトリ含む | サブディレクトリも作成される | 階層保存 |
-| 5  | 想定外   | 'bucket', '', tmpdir, 'test/' | key空文字 | 例外発生 | 想定外入力 |
-| 6  | 想定外   | 'bucket', None, tmpdir, 'test/' | key=None | 例外発生 | 想定外入力 |
-| 7  | 想定外   | '', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | bucket空文字 | 例外発生 | 想定外入力 |
-| 8  | 想定外   | None, 'test/2025-06-12_0900.csv', tmpdir, 'test/' | bucket=None | 例外発生 | 想定外入力 |
-| 9  | 想定外   | 'bucket', 'test/2025-06-12_0900.csv', '', 'test/' | local_s3_dir空文字 | 例外発生 | 想定外入力 |
-| 10 | 想定外   | 'bucket', 'test/2025-06-12_0900.csv', None, 'test/' | local_s3_dir=None | 例外発生 | 想定外入力 |
+| 1  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | tmpdir存在 | '/tmp/tmpdir/test/2025-06-12_0900.csv' |  |
+| 2  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, None | tmpdir存在 | '/tmp/tmpdir/2025-06-12_0900.csv' | prefix省略 |
+| 3  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | tmpdir未作成 | '/tmp/tmpdir/test/2025-06-12_0900.csv' | ディレクトリ自動作成 |
+| 4  | 正常系   | 'bucket', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | keyがサブディレクトリ含む | '/tmp/tmpdir/test/2025-06-12_0900.csv' | 階層保存 |
+| 5  | 想定外   | 'bucket', '', tmpdir, 'test/' | key空文字 | 例外発生(ValueError: key is empty) | 想定外入力 |
+| 6  | 想定外   | 'bucket', None, tmpdir, 'test/' | key=None | 例外発生(ValueError: key is None) | 想定外入力 |
+| 7  | 想定外   | '', 'test/2025-06-12_0900.csv', tmpdir, 'test/' | bucket空文字 | 例外発生(ValueError: bucket is empty) | 想定外入力 |
+| 8  | 想定外   | None, 'test/2025-06-12_0900.csv', tmpdir, 'test/' | bucket=None | 例外発生(ValueError: bucket is None) | 想定外入力 |
+| 9  | 想定外   | 'bucket', 'test/2025-06-12_0900.csv', '', 'test/' | local_s3_dir空文字 | 例外発生(ValueError: local_s3_dir is empty) | 想定外入力 |
+| 10 | 想定外   | 'bucket', 'test/2025-06-12_0900.csv', None, 'test/' | local_s3_dir=None | 例外発生(ValueError: local_s3_dir is None) | 想定外入力 |
 
 ## 6. 想定結果の詳細
 - 正常系は返却値・ファイルパス・ディレクトリ構造が正しいことを確認

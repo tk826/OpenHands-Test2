@@ -24,7 +24,7 @@ pytest tests/test_check_process.py
 |----|----------|----------------------|----------|------|
 | 1  | 正常系   | 'a:int\nb:float\nc:datetime\n' | {'a': 'int', 'b': 'float', 'c': 'datetime'} | 標準ケース |
 | 2  | 異常系   | 'a:int\nb\nc:datetime\n' | 例外発生 | フォーマット不正 |
-| 3  | 境界値   | '' | 空dict返却 or 例外 | 空ファイル |
+| 3  | 境界値   | '' | 例外発生(ValueError: columns_file is empty) | 空ファイル |
 | 4  | 想定外   | None | 例外発生 | None入力 |
 
 ### check_values
@@ -32,13 +32,13 @@ pytest tests/test_check_process.py
 |----|----------|--------------|--------------|----------|------|
 | 1  | 正常系   | a: ['1', '2'], b: ['1.1', '2.2'], c: ['2020-01-01 12:00:00', '2020-01-02 00:00:00'], d: ['x', 'y'] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | 変換・警告なし | 標準ケース |
 | 2  | 正常系   | a: ['1', '3'], b: ['1.1', '3.3'], c: ['2020-01-01 12:00:00', '2020-01-02 00:00:00'], d: ['x', 'y'], e: [1,2] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | e列削除 | 余分なカラム |
-| 3  | 異常系   | a: ['1', 'x'], b: ['1.1', 'bad'], c: ['2020-01-01 12:00:00', '2020-13-01 00:00:00'], d: [None, 'abc'] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | 警告3件, 不正値空文字 | 型不正値 |
-| 4  | 境界値   | a: ['', None], b: ['', None], c: ['', None], d: ['', None] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | 全て空文字, 警告なし | 欠損値 |
+| 3  | 異常系   | a: ['1', 'x'], b: ['1.1', 'bad'], c: ['2020-01-01 12:00:00', '2020-13-01 00:00:00'], d: [None, 'abc'] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | [{'col': 'a', 'row': 1, 'value': 'x', 'error': 'invalid int'}, {'col': 'b', 'row': 1, 'value': 'bad', 'error': 'invalid float'}, {'col': 'c', 'row': 1, 'value': '2020-13-01 00:00:00', 'error': 'invalid datetime'}], 不正値は空文字 | 型不正値 |
+| 4  | 境界値   | a: ['', None], b: ['', None], c: ['', None], d: ['', None] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | [['', ''], ['', ''], ['', ''], ['', '']], 警告なし | 欠損値 |
 | 5  | 境界値   | a: ['0', '-1'], b: ['0.0', '-1.1'], c: ['1999-12-31 23:59:59', '2100-01-01 00:00:00'], d: ['',''] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | 変換・警告なし | 境界値 |
-| 6  | 複数件   | a: ['1', '2'], b: ['1.1', '2.2'], c: ['2020-01-01 12:00:00', '2020-01-02 00:00:00'], d: ['x', 'y'] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | 2件返却 | 複数件 |
-| 7  | 想定外   | a: ['a', 'b'], b: ['b', 'c'], c: ['c', 'd'], d: [None, None] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | 全て警告・空文字 | 全不正値 |
-| 8  | 想定外   | 空DataFrame | {'a': 'int'} | 空DataFrame返却 | カラムなし |
-| 9  | 想定外   | a: [1,2] | {} | a列削除 | column_types空 |
+| 6  | 複数件   | a: ['1', '2'], b: ['1.1', '2.2'], c: ['2020-01-01 12:00:00', '2020-01-02 00:00:00'], d: ['x', 'y'] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | [{'a': 1, 'b': 1.1, 'c': '2020-01-01 12:00:00', 'd': 'x'}, {'a': 2, 'b': 2.2, 'c': '2020-01-02 00:00:00', 'd': 'y'}] | 複数件 |
+| 7  | 想定外   | a: ['a', 'b'], b: ['b', 'c'], c: ['c', 'd'], d: [None, None] | {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'} | [{'col': 'a', 'row': 0, 'value': 'a', 'error': 'invalid int'}, {'col': 'a', 'row': 1, 'value': 'b', 'error': 'invalid int'}, {'col': 'b', 'row': 0, 'value': 'b', 'error': 'invalid float'}, {'col': 'b', 'row': 1, 'value': 'c', 'error': 'invalid float'}, {'col': 'c', 'row': 0, 'value': 'c', 'error': 'invalid datetime'}, {'col': 'c', 'row': 1, 'value': 'd', 'error': 'invalid datetime'}], 全て空文字 | 全不正値 |
+| 8  | 想定外   | 空DataFrame | {'a': 'int'} | 空DataFrame | カラムなし |
+| 9  | 想定外   | a: [1,2] | {} | 空DataFrame | column_types空 |
 
 ## 6. 想定結果の詳細
 - 正常系は返却値・警告リスト・DataFrame内容が正しいことを確認
