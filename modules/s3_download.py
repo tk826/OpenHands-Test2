@@ -17,6 +17,8 @@ def list_csv_files(bucket, prefix, date_str):
     戻り値:
         list: 条件に一致するCSVファイルキーのリスト。
     """
+    if not date_str:
+        return []
     s3 = boto3.client('s3')
     paginator = s3.get_paginator('list_objects_v2')
     files = []

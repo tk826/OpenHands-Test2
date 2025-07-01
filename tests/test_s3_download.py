@@ -23,18 +23,22 @@ def test_list_csv_files():
 
 @pytest.mark.parametrize("objects,date_str,expected", [
     # No.1: 日付一致CSVのみ抽出
-    ([{'Key': 'test/2025-06-12_0900.csv'}, {'Key': 'test/2025-06-11_0900.csv'}, {'Key': 'test1/2025-06-12_0900.csv'}, {'Key': 'test/other.txt'}], '2025-06-12', ['test/2025-06-12_0900.csv', 'test1/2025-06-12_0900.csv']),
-    # No.2: 一致なし
+    ([{'Key': 'test/2025-06-12_0900.csv'}, {'Key': 'test/2025-06-11_0900.csv'}, {'Key': 'test/other.txt'}], '2025-06-12', ['test/2025-06-12_0900.csv']),
+    # No.2: 日付一致CSVのみ抽出（複数ディレクトリ）
+    ([{'Key': 'test/2025-06-12_0900.csv'}, {'Key': 'test/2025-06-11_0900.csv'}, {'Key': 'test1/2025-06-12_1210.csv'}, {'Key': 'test/other.txt'}], '2025-06-12', ['test/2025-06-12_0900.csv', 'test1/2025-06-12_1210.csv']),
+    # No.3: 日付一致CSVのみ抽出（複数ファイル）
+    ([{'Key': 'test/2025-06-12_0900.csv'}, {'Key': 'test/2025-06-12_0915.csv'}, {'Key': 'test/2025-06-12_2359.csv'}, {'Key': 'test/2025-06-11_0900.csv'}, {'Key': 'test1/2025-06-12_1210.csv'}, {'Key': 'test/other.txt'}], '2025-06-12', ['test/2025-06-12_0900.csv', 'test/2025-06-12_0915.csv', 'test/2025-06-12_2359.csv', 'test1/2025-06-12_1210.csv']),
+    # No.4: 一致なし
     ([{'Key': 'test/2025-06-12_0900.csv'}, {'Key': 'test/2025-06-11_0900.csv'}], '2025-06-13', []),
-    # No.3: S3にファイルなし
+    # No.5: S3にファイルなし
     ([], '2025-06-12', []),
-    # No.4: 拡張子不一致
+    # No.6: 拡張子不一致
     ([{'Key': 'test/2025-06-12_0900.txt'}], '2025-06-12', []),
-    # No.5: date_str空文字
-    ([{'Key': 'test/2025-06-12_0900.csv'}], '', ['test/2025-06-12_0900.csv']),
-    # No.6: 同一ファイル複数
+    # No.7: date_str空文字
+    ([{'Key': 'test/2025-06-12_0900.csv'}], '', []),
+    # No.8: 同一ファイル複数
     ([{'Key': 'test/2025-06-12_0900.csv'}, {'Key': 'test/2025-06-12_0900.csv'}], '2025-06-12', ['test/2025-06-12_0900.csv', 'test/2025-06-12_0900.csv']),
-    # No.7: KeyがNone
+    # No.9: KeyがNone
     ([{'Key': None}], '2025-06-12', []),
 ])
 def test_list_csv_files_cases(objects, date_str, expected):
