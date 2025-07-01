@@ -30,7 +30,7 @@ pytest tests/test_s3_download.py
 | 6  | 異常系   | 'bucket', '', '2025-06-12'    | ['test/2025-06-12_0900.txt'] | [] | 拡張子不一致 |
 | 7  | 境界値   | 'bucket', '', ''              | ['test/2025-06-12_0900.csv'] | [] | date_str空文字 |
 | 8  | 境界値   | 'bucket', '', '2025-06-12'    | ['test/2025-06-12_0900.csv', 'test/2025-06-12_0900.csv'] | ['test/2025-06-12_0900.csv', 'test/2025-06-12_0900.csv'] | 同一ファイル複数 |
-| 9  | 想定外   | 'bucket', '', '2025-06-12'    | [{'Key': None}] | [] | KeyがNone |
+| 9  | 想定外   | 'bucket', '', '2025-06-12'    | [{'Key': None}] | [], warnings: [] | KeyがNone |
 
 ### download_csv
 | No | 正常/異常 | 入力(bucket, key, local_s3_dir, prefix) | 事前状態 | 期待結果 | 備考 |
