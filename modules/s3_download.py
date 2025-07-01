@@ -25,7 +25,14 @@ def list_csv_files(bucket, prefix, date_str):
             for obj in page['Contents']:
                 key = obj['Key']
                 # 例: test/2025-06-12_0900.csv
-                if key.endswith('.csv') and date_str in os.path.basename(key):
+                base = os.path.basename(key)
+                # フォーマット: YYYY-MM-DD_hhmm.csv
+                if (
+                    key.endswith('.csv')
+                    and date_str in base
+                    and len(base.split('_')) == 2
+                    and base.split('_')[1].endswith('.csv')
+                ):
                     files.append(key)
     return files
 
