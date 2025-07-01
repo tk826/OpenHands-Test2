@@ -29,6 +29,48 @@ def test_check_values():
     assert df2['c'][1] == ''
     assert df2['d'][0] == ''
 
+    # --- 標準ケース: 入力1件・期待1件 ---
+    df_single = pd.DataFrame({
+        'a': ['10'],
+        'b': ['2.5'],
+        'c': ['2022-12-31 23:59:59'],
+        'd': ['abc']
+    })
+    df2, warnings = check_values(df_single, column_types)
+    assert warnings == []
+    assert df2.shape == (1, 4)
+    assert df2['a'][0] == '10'
+    assert df2['b'][0] == '2.5'
+    assert df2['c'][0] == '2022-12-31 23:59:59'
+    assert df2['d'][0] == 'abc'
+
+    # --- 標準ケース: 入力5件・期待5件 ---
+    df_multi = pd.DataFrame({
+        'a': ['1', '2', '3', '4', '5'],
+        'b': ['1.1', '2.2', '3.3', '4.4', '5.5'],
+        'c': [
+            '2020-01-01 00:00:00',
+            '2020-01-02 00:00:00',
+            '2020-01-03 00:00:00',
+            '2020-01-04 00:00:00',
+            '2020-01-05 00:00:00',
+        ],
+        'd': ['a', 'b', 'c', 'd', 'e']
+    })
+    df2, warnings = check_values(df_multi, column_types)
+    assert warnings == []
+    assert df2.shape == (5, 4)
+    assert list(df2['a']) == ['1', '2', '3', '4', '5']
+    assert list(df2['b']) == ['1.1', '2.2', '3.3', '4.4', '5.5']
+    assert list(df2['c']) == [
+        '2020-01-01 00:00:00',
+        '2020-01-02 00:00:00',
+        '2020-01-03 00:00:00',
+        '2020-01-04 00:00:00',
+        '2020-01-05 00:00:00',
+    ]
+    assert list(df2['d']) == ['a', 'b', 'c', 'd', 'e']
+
 # テスト用のダミー関数を用意（本番mainはinput()を使うため直接呼ばない）
 def test_grouped_output():
     import os
