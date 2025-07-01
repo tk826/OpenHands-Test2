@@ -23,8 +23,9 @@ def list_csv_files(bucket, prefix, date_str):
     for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
         if 'Contents' in page:
             for obj in page['Contents']:
-                key = obj['Key']
-                # 例: test/2025-06-12_0900.csv
+                key = obj.get('Key')
+                if not key:
+                    continue
                 if key.endswith('.csv') and date_str in os.path.basename(key):
                     files.append(key)
     return files
@@ -39,10 +40,15 @@ def download_csv(bucket, key, local_s3_dir, prefix=None):
     戻り値:
         str: ダウンロードしたCSVファイルのローカルパス。
     """
+    if not bucket or not isinstance(bucket, str):
+        raise ValueError("bucket must be a non-empty string")
+    if not key or not isinstance(key, str):
+        raise ValueError("key must be a non-empty string")
+    if not local_s3_dir or not isinstance(local_s3_dir, str):
+        raise ValueError("local_s3_dir must be a non-empty string")
     s3 = boto3.client('s3')
     if not os.path.exists(local_s3_dir):
         os.makedirs(local_s3_dir)
-    # 新形式: グループ名/ファイル名で保存
     rel_path = key
     local_path = os.path.join(local_s3_dir, rel_path)
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
