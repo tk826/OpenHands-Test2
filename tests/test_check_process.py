@@ -9,6 +9,80 @@ def test_load_column_types():
         types = load_column_types(f.name)
         assert types == {'a': 'int', 'b': 'float', 'c': 'datetime'}
 
+import pytest
+
+@pytest.mark.parametrize(
+    "df_dict,column_types,expected_df_dict,expected_warnings",
+    [   # int型チェック
+        (
+            {'a': ['1', 'x', '', None]},
+            {'a': 'int'},
+            {'a': ['1', '', '', '']},
+            ["Invalid int in a at row 1: x"]
+        ),
+        # float型チェック
+        (
+            {'b': ['1.1', 'bad', '', None]},
+            {'b': 'float'},
+            {'b': ['1.1', '', '', '']},
+            ["Invalid float in b at row 1: bad"]
+        ),
+        # datetime型チェック
+        (
+            {'c': ['2020-01-01 12:00:00', '2020-13-01 00:00:00', '', None]},
+            {'c': 'datetime'},
+            {'c': ['2020-01-01 12:00:00', '', '', '']},
+            ["Invalid datetime in c at row 1: 2020-13-01 00:00:00"]
+        ),
+        # str型チェック（None→空文字、警告なし）
+        (
+            {'d': [None, 'abc', '', 'def']},
+            {'d': 'str'},
+            {'d': ['', 'abc', '', 'def']},
+            []
+        ),
+        # 不要カラム削除
+        (
+            {'a': ['1'], 'b': ['2']},
+            {'a': 'int'},
+            {'a': ['1']},
+            []
+        ),
+        # 欠損値補完
+        (
+            {'a': [None, float('nan'), '']},
+            {'a': 'int'},
+            {'a': ['', '', '']},
+            []
+        ),
+        # 複数カラム複合
+        (
+            {'a': ['1', 'x'], 'b': ['1.1', 'bad'], 'c': ['2020-01-01 12:00:00', '2020-13-01 00:00:00']},
+            {'a': 'int', 'b': 'float', 'c': 'datetime'},
+            {'a': ['1', ''], 'b': ['1.1', ''], 'c': ['2020-01-01 12:00:00', '']},
+            [
+                "Invalid int in a at row 1: x",
+                "Invalid float in b at row 1: bad",
+                "Invalid datetime in c at row 1: 2020-13-01 00:00:00"
+            ]
+        ),
+    ]
+)
+def test_check_values_param(df_dict, column_types, expected_df_dict, expected_warnings):
+    df = pd.DataFrame(df_dict)
+    result_df, warnings = check_values(df, column_types)
+    # DataFrame内容一致
+    for col in expected_df_dict:
+        assert list(result_df[col]) == expected_df_dict[col]
+    # 不要カラムが残っていない
+    for col in result_df.columns:
+        assert col in column_types
+    # ワーニング内容一致
+    for w in expected_warnings:
+        assert w in warnings
+    # ワーニング数一致
+    assert len(warnings) == len(expected_warnings)
+
 def test_check_values():
     column_types = {'a': 'int', 'b': 'float', 'c': 'datetime', 'd': 'str'}
     df = pd.DataFrame({
