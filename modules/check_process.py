@@ -14,10 +14,20 @@ def load_column_types(columns_file):
     戻り値:
         dict: カラム名と型のマッピング。
     """
+    if columns_file is None:
+        raise ValueError("columns_file is None")
     types = {}
     with open(columns_file, 'r') as f:
-        for line in f:
-            name, typ = line.strip().split(':')
+        lines = f.readlines()
+        if not lines or all(line.strip() == '' for line in lines):
+            raise ValueError("columns_file is empty")
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            if ':' not in line:
+                raise ValueError("invalid format in columns_file")
+            name, typ = line.split(':', 1)
             types[name] = typ
     return types
 
