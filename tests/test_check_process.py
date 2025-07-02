@@ -33,7 +33,7 @@ def test_load_column_types(file_content, expected, raises):
     finally:
         os.remove(fpath)
 
-# --- check_values tests ---
+# --- check_values tests (merged No9 & No10) ---
 @pytest.mark.parametrize(
     "df_dict,column_types,expected_df,expected_warnings",
     [
@@ -125,34 +125,6 @@ def test_load_column_types(file_content, expected, raises):
                 {'col': 'c', 'row': 1, 'value': 'd', 'error': 'invalid datetime'}
             ]
         ),
-    ]
-)
-def test_check_values(df_dict, column_types, expected_df, expected_warnings):
-    df = pd.DataFrame(df_dict)
-    result_df, warnings = check_process.check_values(df, column_types)
-    # 型変換
-    for col, typ in column_types.items():
-        if typ == 'int':
-            result_df[col] = result_df[col].apply(lambda x: int(float(x)) if x != '' else x)
-        elif typ == 'float':
-            result_df[col] = result_df[col].apply(lambda x: float(x) if x != '' else x)
-    # DataFrame内容比較
-    assert result_df.to_dict(orient='records') == expected_df
-    # ワーニング比較
-    def parse_warning(w):
-        import re
-        m = re.match(r"Invalid (\w+) in (\w+) at row (\d+): (.*)", w)
-        if not m:
-            return w
-        typ, col, row, value = m.groups()
-        return {'col': col, 'row': int(row), 'value': value, 'error': f'invalid {typ}'}
-    parsed = [parse_warning(w) for w in warnings]
-    assert parsed == expected_warnings
-
-# --- check_values No9 & No10 ---
-@pytest.mark.parametrize(
-    "df_dict,column_types,expected_df,expected_warnings",
-    [
         # 9 空DataFrame, column_typesあり
         (
             {},
@@ -169,7 +141,7 @@ def test_check_values(df_dict, column_types, expected_df, expected_warnings):
         ),
     ]
 )
-def test_check_values_no9_no10(df_dict, column_types, expected_df, expected_warnings):
+def test_check_values(df_dict, column_types, expected_df, expected_warnings):
     df = pd.DataFrame(df_dict)
     result_df, warnings = check_process.check_values(df, column_types)
     # 型変換
@@ -179,7 +151,9 @@ def test_check_values_no9_no10(df_dict, column_types, expected_df, expected_warn
                 result_df[col] = result_df[col].apply(lambda x: int(float(x)) if x != '' else x)
             elif typ == 'float':
                 result_df[col] = result_df[col].apply(lambda x: float(x) if x != '' else x)
+    # DataFrame内容比較
     assert result_df.to_dict(orient='records') == expected_df
+    # ワーニング比較
     def parse_warning(w):
         import re
         m = re.match(r"Invalid (\w+) in (\w+) at row (\d+): (.*)", w)
@@ -189,4 +163,5 @@ def test_check_values_no9_no10(df_dict, column_types, expected_df, expected_warn
         return {'col': col, 'row': int(row), 'value': value, 'error': f'invalid {typ}'}
     parsed = [parse_warning(w) for w in warnings]
     assert parsed == expected_warnings
+
 
