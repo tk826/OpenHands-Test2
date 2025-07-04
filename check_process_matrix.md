@@ -2,12 +2,12 @@
 
 ## 1. load_column_types 関数
 
-| No | 条件                         | 入力値                | 判定内容・分岐                           | 出力・例外                      |
+| No | カラム情報のパス         | カラム情報の内容           | 判定内容・分岐                           | 出力・例外                      |
 |----|------------------------------|-------------------------|------------------------------------------|----------------------------------|
-| 1  | columns_file is None         | None                    | columns_fileがNone                       | ValueError("columns_file is None")|
-| 2  | 空ファイル                   | （空ファイル）           | ファイルが空                             | ValueError("columns_file is empty")|
-| 3  | フォーマット不正             | a:int\nb\nc:datetime   | ':'が含まれない行がある                  | ValueError("invalid format in columns_file")|
-| 4  | 正常                         | a:int\nb:float          | すべての行が'カラム:型'形式               | {'a': 'int', 'b': 'float'}       |
+| 1  | None                        | -                       | columns_fileがNone                       | ValueError("columns_file is None")|
+| 2  | 任意パス                     | （空ファイル）           | ファイルが空                             | ValueError("columns_file is empty")|
+| 3  | 任意パス                     | a:int\nb\nc:datetime   | ':'が含まれない行がある                  | ValueError("invalid format in columns_file")|
+| 4  | 任意パス                     | a:int\nb:float          | すべての行が'カラム:型'形式               | {'a': 'int', 'b': 'float'}       |
 
 
 ## 2. check_values 関数
