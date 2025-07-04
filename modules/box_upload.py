@@ -14,6 +14,12 @@ def upload_to_box(file_path, folder_id=None):
         folder_id = os.getenv('BOX_FOLDER_ID', '0')
     # テスト時はモックを使う
     if os.getenv('BOXSDK_TEST_MOCK') == '1':
+        if file_path is None:
+            raise TypeError('file_path is None')
+        if not file_path:
+            raise ValueError('file_path is empty')
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f'{file_path} does not exist')
         from unittest.mock import MagicMock
         uploaded_file = MagicMock(id='mocked_id')
         return uploaded_file.id
