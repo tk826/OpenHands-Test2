@@ -51,3 +51,19 @@ def test_upload_csv(bucket, key, file_path):
         m.return_value.upload_file.return_value = None
         upload_csv(bucket, key, file_path)
         m.return_value.upload_file.assert_called_once_with(file_path, bucket, key)
+
+@pytest.mark.parametrize("bucket, key, file_path, exc", [
+    ("", "test/file.csv", "/tmp/file.csv", ValueError),
+    (None, "test/file.csv", "/tmp/file.csv", TypeError),
+    ("bucket", "", "/tmp/file.csv", ValueError),
+    ("bucket", None, "/tmp/file.csv", TypeError),
+    ("bucket", "test/file.csv", "", ValueError),
+    ("bucket", "test/file.csv", None, TypeError),
+    ("bucket", "test/file.csv", "/tmp/notfound.csv", FileNotFoundError),
+])
+def test_upload_csv_exceptions(bucket, key, file_path, exc):
+    with mock.patch("boto3.client") as m:
+        m.return_value.upload_file.side_effect = exc("error") if exc not in (FileNotFoundError,) else FileNotFoundError("error")
+        with pytest.raises(exc):
+            upload_csv(bucket, key, file_path)
+
