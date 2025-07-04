@@ -30,5 +30,8 @@ def upload_csv(bucket, key, file_path):
         key (str): アップロード先のS3キー。
         file_path (str): アップロードするローカルファイルのパス。
     """
+    if not bucket or not key or not file_path:
+        raise ValueError("bucket, key, and file_path must be provided")
     s3 = boto3.client('s3')
     s3.upload_file(file_path, bucket, key)
+
