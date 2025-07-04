@@ -85,3 +85,24 @@ def check_values(df, column_types):
         if col not in column_types:
             df.drop(col, axis=1, inplace=True)
     return df, warnings
+
+
+def decision_table_check_values():
+    """
+    デシジョンテーブル: check_values関数の入力条件と出力・動作
+    | カラム型      | 値の状態         | 期待動作(値)         | ワーニング出力例                           |
+    |--------------|------------------|----------------------|--------------------------------------------|
+    | datetime     | 正常日付         | そのまま             | なし                                       |
+    | datetime     | 空文字/None/NaN  | ''                   | なし                                       |
+    | datetime     | 不正日付         | ''                   | Invalid datetime in {col} at row {i}: {v}  |
+    | float        | 正常float        | そのまま             | なし                                       |
+    | float        | 空文字/None/NaN  | ''                   | なし                                       |
+    | float        | 不正値           | ''                   | Invalid float in {col} at row {i}: {v}     |
+    | int          | 正常int          | そのまま             | なし                                       |
+    | int          | 空文字/None/NaN  | ''                   | なし                                       |
+    | int          | 不正値           | ''                   | Invalid int in {col} at row {i}: {v}       |
+    | str          | どんな値でも     | None/NaN→''          | なし                                       |
+    | 不要カラム    | -                | DataFrameから削除    | なし                                       |
+    """
+    pass
+
