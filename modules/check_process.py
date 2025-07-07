@@ -3,8 +3,15 @@ import numpy as np  # 数値計算用
 from datetime import datetime  # 日付解析用
 import os  # OS操作用
 
-
-
+# 決定テーブル（ルール一覧）
+# ルール1: 型が 'datetime' の場合、YYYY-MM-DD HH:MM:SS 形式の日付文字列かを判定し、不正値は空文字に補完
+# ルール2: 型が 'float' の場合、float型に変換できるか判定し、不正値は空文字に補完
+# ルール3: 型が 'int' の場合、int型に変換できるか判定し、不正値は空文字に補完
+# ルール4: 型が 'str' の場合、文字列型へ変換し、欠損値（None, NaN, 空文字など）は空文字に補完
+# ルール5: 上記以外や型が未定義の場合、何もしない
+#
+# 型が 'str' かつYの場合: 文字列型へ変換し、欠損値（None, NaN, 空文字など）は空文字に補完
+# 動作: 文字列型へ変換・欠損値補完がXの場合: 何もせず元の値を維持
 
 def load_column_types(columns_file):
     """
