@@ -4,6 +4,55 @@ from datetime import datetime  # 日付解析用
 import os  # OS操作用
 
 
+# デシジョンテーブル（型ごとのチェック・クリーニングルール）
+decision_table = [
+    {
+        'type': 'datetime',
+        'description': 'YYYY-MM-DD HH:MM:SS形式の日付でなければ空文字にする',
+        'check': lambda v: pd.isnull(v) or v == '' or _is_valid_datetime(v),
+        'action': lambda df, i, col, v: df.at.__setitem__((i, col), ''),
+    },
+    {
+        'type': 'float',
+        'description': 'float型でなければ空文字にする',
+        'check': lambda v: pd.isnull(v) or v == '' or _is_valid_float(v),
+        'action': lambda df, i, col, v: df.at.__setitem__((i, col), ''),
+    },
+    {
+        'type': 'int',
+        'description': 'int型でなければ空文字にする',
+        'check': lambda v: pd.isnull(v) or v == '' or _is_valid_int(v),
+        'action': lambda df, i, col, v: df.at.__setitem__((i, col), ''),
+    },
+    {
+        'type': 'str',
+        'description': 'NoneやNaNは空文字にする',
+        'check': lambda v: True,  # すべて許容
+        'action': lambda df, i, col, v: None,  # 何もしない
+    },
+]
+
+def _is_valid_datetime(v):
+    try:
+        datetime.strptime(str(v), '%Y-%m-%d %H:%M:%S')
+        return True
+    except Exception:
+        return False
+
+def _is_valid_float(v):
+    try:
+        float(v)
+        return True
+    except Exception:
+        return False
+
+def _is_valid_int(v):
+    try:
+        int(float(v))
+        return True
+    except Exception:
+        return False
+
 
 
 def load_column_types(columns_file):
