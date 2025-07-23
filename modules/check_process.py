@@ -52,7 +52,7 @@ def check_values(df, column_types):
                         continue
                     datetime.strptime(str(v), '%Y-%m-%d %H:%M:%S')
                 except Exception:
-                    warnings.append(f"Invalid datetime in {col} at row {i}: {v}")
+                    warnings.append(f"{col}列の{i}行目の値が日付として不正です: {v}")
                     df.at[i, col] = ''
         elif typ == 'float':
             # float値かどうかをチェック
@@ -62,7 +62,7 @@ def check_values(df, column_types):
                         continue
                     float(v)
                 except Exception:
-                    warnings.append(f"Invalid float in {col} at row {i}: {v}")
+                    warnings.append(f"{col}列の{i}行目の値が数値（float）として不正です: {v}")
                     df.at[i, col] = ''
         elif typ == 'int':
             # int値かどうかをチェック
@@ -72,7 +72,7 @@ def check_values(df, column_types):
                         continue
                     int(float(v))
                 except Exception:
-                    warnings.append(f"Invalid int in {col} at row {i}: {v}")
+                    warnings.append(f"{col}列の{i}行目の値が整数（int）として不正です: {v}")
                     df.at[i, col] = ''
         elif typ == 'str':
             # 文字列型に変換し、欠損値（Noneなど）を空文字で補完

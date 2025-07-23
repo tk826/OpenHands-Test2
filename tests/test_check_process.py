@@ -156,11 +156,24 @@ def test_check_values(df_dict, column_types, expected_df, expected_warnings):
     # ワーニング比較
     def parse_warning(w):
         import re
+        # 日本語ワーニング対応
+        m = re.match(r"(.*)列の(\d+)行目の値が(.*)として不正です: (.*)", w)
+        if m:
+            col, row, typ_jp, value = m.groups()
+            typ_map = {'日付': 'datetime', '数値（float）': 'float', '整数（int）': 'int'}
+            for jp, en in typ_map.items():
+                if jp in typ_jp:
+                    typ = en
+                    break
+            else:
+                typ = typ_jp
+            return {'col': col, 'row': int(row), 'value': value, 'error': f'invalid {typ}'}
+        # 旧英語ワーニング対応
         m = re.match(r"Invalid (\w+) in (\w+) at row (\d+): (.*)", w)
-        if not m:
-            return w
-        typ, col, row, value = m.groups()
-        return {'col': col, 'row': int(row), 'value': value, 'error': f'invalid {typ}'}
+        if m:
+            typ, col, row, value = m.groups()
+            return {'col': col, 'row': int(row), 'value': value, 'error': f'invalid {typ}'}
+        return w
     parsed = [parse_warning(w) for w in warnings]
     assert parsed == expected_warnings
 
