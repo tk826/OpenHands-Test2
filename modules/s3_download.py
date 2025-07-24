@@ -43,11 +43,11 @@ def download_csv(bucket, key, local_s3_dir, prefix=None):
         str: ダウンロードしたCSVファイルのローカルパス。
     """
     if not bucket or not isinstance(bucket, str):
-        raise ValueError("bucket must be a non-empty string")
+        raise ValueError("bucket must be a non-empty string / バケット名が空か文字列ではありません")
     if not key or not isinstance(key, str):
-        raise ValueError("key must be a non-empty string")
+        raise ValueError("key must be a non-empty string / キーが空か文字列ではありません")
     if not local_s3_dir or not isinstance(local_s3_dir, str):
-        raise ValueError("local_s3_dir must be a non-empty string")
+        raise ValueError("local_s3_dir must be a non-empty string / ローカルディレクトリが空か文字列ではありません")
     s3 = boto3.client('s3')
     if not os.path.exists(local_s3_dir):
         os.makedirs(local_s3_dir)

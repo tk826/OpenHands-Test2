@@ -27,7 +27,7 @@ from modules.s3_upload import zip_csv_files, upload_csv
         # No.9 zip_path空文字
         ("/tmp/dir9", "", ["a.csv"], None, ValueError),
         # No.10 zip_path None
-        ("/tmp/dir10", None, ["a.csv"], None, TypeError),
+        ("/tmp/dir10", None, ["a.csv"], None, ValueError),
     ]
 )
 def test_zip_csv_files(csv_dir, zip_path, files, expected_in_zip, expected_exception):

@@ -15,18 +15,18 @@ def load_column_types(columns_file):
         dict: カラム名と型のマッピング。
     """
     if columns_file is None:
-        raise ValueError("columns_file is None")
+        raise ValueError("columns_file is None / カラム情報ファイルがNoneです")
     types = {}
     with open(columns_file, 'r') as f:
         lines = f.readlines()
         if not lines or all(line.strip() == '' for line in lines):
-            raise ValueError("columns_file is empty")
+            raise ValueError("columns_file is empty / カラム情報ファイルが空です")
         for line in lines:
             line = line.strip()
             if not line:
                 continue
             if ':' not in line:
-                raise ValueError("invalid format in columns_file")
+                raise ValueError("invalid format in columns_file / カラム情報ファイルの形式が不正です")
             name, typ = line.split(':', 1)
             types[name] = typ
     return types
@@ -52,7 +52,7 @@ def check_values(df, column_types):
                         continue
                     datetime.strptime(str(v), '%Y-%m-%d %H:%M:%S')
                 except Exception:
-                    warnings.append(f"Invalid datetime in {col} at row {i}: {v}")
+                    warnings.append(f"Invalid datetime in {col} at row {i}: {str(v).strip()} / {col}列の{i}行目の値が日付形式ではありません: {str(v).strip()}")
                     df.at[i, col] = ''
         elif typ == 'float':
             # float値かどうかをチェック
@@ -62,7 +62,7 @@ def check_values(df, column_types):
                         continue
                     float(v)
                 except Exception:
-                    warnings.append(f"Invalid float in {col} at row {i}: {v}")
+                    warnings.append(f"Invalid float in {col} at row {i}: {str(v).strip()} / {col}列の{i}行目の値が数値(float)ではありません: {str(v).strip()}")
                     df.at[i, col] = ''
         elif typ == 'int':
             # int値かどうかをチェック
@@ -72,7 +72,7 @@ def check_values(df, column_types):
                         continue
                     int(float(v))
                 except Exception:
-                    warnings.append(f"Invalid int in {col} at row {i}: {v}")
+                    warnings.append(f"Invalid int in {col} at row {i}: {str(v).strip()} / {col}列の{i}行目の値が整数(int)ではありません: {str(v).strip()}")
                     df.at[i, col] = ''
         elif typ == 'str':
             # 文字列型に変換し、欠損値（Noneなど）を空文字で補完

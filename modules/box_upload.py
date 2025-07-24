@@ -15,17 +15,17 @@ def upload_to_box(file_path, folder_id=None):
     # テスト時はモックを使う
     if os.getenv('BOXSDK_TEST_MOCK') == '1':
         if file_path is None:
-            raise TypeError('file_path is None')
+            raise TypeError('file_path is None / ファイルパスがNoneです')
         if not file_path:
-            raise ValueError('file_path is empty')
+            raise ValueError('file_path is empty / ファイルパスが空です')
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f'{file_path} does not exist')
+            raise FileNotFoundError(f'{file_path} does not exist / ファイルが存在しません')
         from unittest.mock import MagicMock
         uploaded_file = MagicMock(id='mocked_id')
         return uploaded_file.id
     config_path = os.getenv('BOX_CONFIG_PATH')
     if not config_path or not os.path.exists(config_path):
-        raise ValueError('BOX_CONFIG_PATH is not set or file does not exist')
+        raise ValueError('BOX_CONFIG_PATH is not set or file does not exist / BOX設定ファイルが未設定または存在しません')
     auth = JWTAuth.from_settings_file(config_path)
     client = Client(auth)
     folder = client.folder(folder_id)

@@ -156,11 +156,11 @@ def test_check_values(df_dict, column_types, expected_df, expected_warnings):
     # ワーニング比較
     def parse_warning(w):
         import re
-        m = re.match(r"Invalid (\w+) in (\w+) at row (\d+): (.*)", w)
+        m = re.match(r"Invalid (\w+) in (\w+) at row (\d+): ([^/]*)(?: / .*)?", w)
         if not m:
             return w
         typ, col, row, value = m.groups()
-        return {'col': col, 'row': int(row), 'value': value, 'error': f'invalid {typ}'}
+        return {'col': col, 'row': int(row), 'value': value.strip(), 'error': f'invalid {typ}'}
     parsed = [parse_warning(w) for w in warnings]
     assert parsed == expected_warnings
 
