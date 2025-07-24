@@ -1,5 +1,6 @@
 import os  # OS操作用
 
+from modules.messages import MESSAGES
 import boto3  # AWS SDK for Python（AWS用SDK）
 
 
@@ -17,11 +18,13 @@ def zip_csv_files(csv_dir, zip_path):
         str: 作成されたzipファイルのパス。
     """
     if csv_dir is None:
-        raise TypeError('csv_dir is None')
+        raise TypeError(MESSAGES['csv_dir_none'])
     if not csv_dir:
-        raise ValueError('csv_dir is empty')
+        raise ValueError(MESSAGES['csv_dir_empty'])
+    if zip_path is None:
+        raise TypeError(MESSAGES['zip_path_empty'])
     if not zip_path:
-        raise ValueError('zip_path is empty')
+        raise ValueError(MESSAGES['zip_path_empty'])
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in os.listdir(csv_dir):
             if file.endswith('.csv'):
