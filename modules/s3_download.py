@@ -1,5 +1,6 @@
 import os  # OS操作用
 
+from modules.messages import MESSAGES
 import boto3  # AWS SDK for Python（AWS用SDK）
 
 
@@ -43,11 +44,11 @@ def download_csv(bucket, key, local_s3_dir, prefix=None):
         str: ダウンロードしたCSVファイルのローカルパス。
     """
     if not bucket or not isinstance(bucket, str):
-        raise ValueError("bucket must be a non-empty string")
+        raise ValueError(MESSAGES['bucket_invalid'])
     if not key or not isinstance(key, str):
-        raise ValueError("key must be a non-empty string")
+        raise ValueError(MESSAGES['key_invalid'])
     if not local_s3_dir or not isinstance(local_s3_dir, str):
-        raise ValueError("local_s3_dir must be a non-empty string")
+        raise ValueError(MESSAGES['local_s3_dir_invalid'])
     s3 = boto3.client('s3')
     if not os.path.exists(local_s3_dir):
         os.makedirs(local_s3_dir)

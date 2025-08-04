@@ -23,6 +23,28 @@ graph TD;
 ## 4. 各機能の詳細
 
 本設計では、関連する機能をまとめて記載しています。
+- エラーメッセージやバリデーションメッセージは modules/messages.py で一元管理され、各モジュール（box_upload.py, check_process.py, s3_download.py, s3_upload.py）から参照されます。
+  これにより、例外発生時のメッセージが各モジュールで統一され、保守性が向上します。
+  例：
+  modules/messages.py
+  ```python
+  # 共通メッセージ定義
+  MESSAGES = {
+      'file_path_none': 'file_path is None',
+      'file_path_empty': 'file_path is empty',
+      'file_not_found': '{file_path} does not exist',
+      'box_config_missing': 'BOX_CONFIG_PATH is not set or file does not exist',
+      'columns_file_none': 'columns_file is None',
+      'columns_file_empty': 'columns_file is empty',
+      'columns_file_invalid': 'invalid format in columns_file',
+      'bucket_invalid': 'bucket must be a non-empty string',
+      'key_invalid': 'key must be a non-empty string',
+      'local_s3_dir_invalid': 'local_s3_dir must be a non-empty string',
+      'csv_dir_none': 'csv_dir is None',
+      'csv_dir_empty': 'csv_dir is empty',
+      'zip_path_empty': 'zip_path is empty',
+  }
+  ```
 
 ### 4.1 入出力ファイルの仕様
 - 入力ファイルは「グループ名/日付_時分.csv」とし、出力ファイルは「日付_グループ名.csv」でグループごとにまとめて出力するように仕様変更。
@@ -90,6 +112,7 @@ graph TD;
   - `s3_upload.py` の `zip_csv_files` 関数は、指定ディレクトリ内の複数CSVファイルをまとめてZIP圧縮します。
   - `upload_csv` 関数は、単一CSVまたはZIPファイルをS3バケットへアップロードします。
   - いずれもboto3クライアントを利用し、アップロード先バケット・キーは引数で指定します。
+- box_upload.py, check_process.py, s3_download.py, s3_upload.py では、エラーやバリデーション例外時のメッセージとして modules/messages.py の定義を利用します。
 
 ## 5. ディレクトリ構成
 - script.py: メインバッチスクリプト
@@ -97,6 +120,7 @@ graph TD;
 - s3_upload.py: S3へのアップロード・ZIP圧縮関連
 - check_process.py: データ検証処理
 - columns.txt: カラム名と型定義
+- modules/messages.py: 共通エラーメッセージやバリデーションメッセージの定義ファイル。
 - test_*.py: 各種ユニットテスト
 
 ## 6. 環境変数

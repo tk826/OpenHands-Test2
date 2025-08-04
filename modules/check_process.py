@@ -2,6 +2,7 @@ import pandas as pd  # データ操作用ライブラリ
 import numpy as np  # 数値計算用
 from datetime import datetime  # 日付解析用
 import os  # OS操作用
+from modules.messages import MESSAGES
 
 
 
@@ -15,18 +16,18 @@ def load_column_types(columns_file):
         dict: カラム名と型のマッピング。
     """
     if columns_file is None:
-        raise ValueError("columns_file is None")
+        raise ValueError(MESSAGES['columns_file_none'])
     types = {}
     with open(columns_file, 'r') as f:
         lines = f.readlines()
         if not lines or all(line.strip() == '' for line in lines):
-            raise ValueError("columns_file is empty")
+            raise ValueError(MESSAGES['columns_file_empty'])
         for line in lines:
             line = line.strip()
             if not line:
                 continue
             if ':' not in line:
-                raise ValueError("invalid format in columns_file")
+                raise ValueError(MESSAGES['columns_file_invalid'])
             name, typ = line.split(':', 1)
             types[name] = typ
     return types
