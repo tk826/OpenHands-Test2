@@ -20,3 +20,5 @@ value17:float
 value18:float
 value19:float
 value20:float
+type1:str
+speed:float
