@@ -22,3 +22,5 @@ value19:float
 value20:float
 type1:str
 speed:float
+speed1:int
+speed2:int
