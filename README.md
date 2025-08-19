@@ -16,7 +16,7 @@ docker run --rm -it -e S3_BUCKET=s3-bucket-openhands -e S3_PREFIX_IN=test_data -
 ```
 
 - 必要に応じて環境変数を設定してください。
-- `columns.txt` などのファイルも `/app` にマウントされます。
+- 必要なファイル（例: `columns.txt`）は自動的に `/app` にマウントされます。
 
 
 ### Dockerでテストを実行する方法
